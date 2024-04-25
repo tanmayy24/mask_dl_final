@@ -44,7 +44,7 @@ if __name__ == "__main__":
     parser.add_argument("--N_S", type=int, default=4)
     parser.add_argument("--N_T", type=int, default=8)
     parser.add_argument("--model_type", type=str, default="gSTA")
-    parser.add_argument("--in_shape", type=int, default=[11, 3, 160, 240], nargs="+")
+    parser.add_argument("--in_shape", type=int, default=[11, 49, 160, 240], nargs="+")
     parser.add_argument("--pre_seq_len", type=int, default=11)
     parser.add_argument("--aft_seq_len", type=int, default=11)
 
