@@ -141,14 +141,11 @@ class WenmaNet(nn.Module):
         self.encoder2 = EncoderBlock(64, 128)
         self.encoder3 = EncoderBlock(128, 256)
         self.encoder4 = EncoderBlock(256, 512)
-
         self.bottleneck = ConvBlock(512, 1024)
-
         self.decoder1 = DecoderBlock(1024, 512, 512)
         self.decoder2 = DecoderBlock(512, 256, 256)
         self.decoder3 = DecoderBlock(256, 128, 128)
         self.decoder4 = DecoderBlock(128, 64, 64)
-
         self.output_layer = nn.Conv2d(64, n_classes, kernel_size=1)
 
     def forward(self, x):
@@ -156,14 +153,11 @@ class WenmaNet(nn.Module):
         s2, p2 = self.encoder2(p1)
         s3, p3 = self.encoder3(p2)
         s4, p4 = self.encoder4(p3)
-
         b1 = self.bottleneck(p4)
-
         d1 = self.decoder1(b1, s4)
         d2 = self.decoder2(d1, s3)
         d3 = self.decoder3(d2, s2)
         d4 = self.decoder4(d3, s1)
-
         outputs = self.output_layer(d4)
 
         return outputs
@@ -171,28 +165,23 @@ class WenmaNet(nn.Module):
 
 model = WenmaNet(in_channels=3, n_classes=49).to(device)
 model = nn.DataParallel(model)  # Enable DataParallel
-
 loss_fn = nn.CrossEntropyLoss()
-
-optimizer = Adam(model.parameters(), lr=0.01)
-
+optimizer = Adam(model.parameters(), lr=0.001)
 scaler = torch.cuda.amp.GradScaler()
-
 num_epochs = 100
-
 train_losses = []
 val_losses = []
 
 cnt = 0
 
 # Define the training loop
-for epoch in tqdm(range(num_epochs)):
+for epoch in range(num_epochs):
     model.train()  # Set model to training mode
     train_loss = 0.0
     val_iou_epoch = []
 
     # Loop over the training data
-    for images, masks in train_dataloader:
+    for images, masks in enumerate(tqdm(train_dataloader)):
         for frame in range(22):  # Assume there are 22 frames per batch
             image = images[frame].to(device)
             mask = masks[frame].type(torch.long).to(device)
@@ -219,7 +208,7 @@ for epoch in tqdm(range(num_epochs)):
     model.eval()  # Set model to evaluation mode
     val_loss = 0.0
     with torch.no_grad():  # Disable gradient calculation
-        for images, masks in val_dataloader:
+        for images, masks in enumerate(tqdm(val_dataloader)):
             for frame in range(22):
                 image = images[frame].to(device)
                 mask = masks[frame].type(torch.long).to(device)
