@@ -14,6 +14,7 @@ def main(args):
             os.path.join(args.data_root, args.split, f"video_{i:05d}", "mask.npy")
         )
         all_masks.append(mask)
+        print(f"Loaded mask shape for video {i}: {mask.shape}")
 
     all_masks = np.stack(all_masks)
     torch.save(torch.from_numpy(all_masks), args.output_file)
