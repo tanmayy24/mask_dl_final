@@ -8,48 +8,67 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from torch.optim import Adam
 from torchvision import transforms
-import torchmetrics
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Using device: {device}")
-jaccard = torchmetrics.classification.JaccardIndex(task="multiclass", num_classes=49)
 
-class DLDataset(Dataset):
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
+
+class WenmaSet(Dataset):
     def __init__(self, data_path, data_type, transform=None):
         self.data_path = data_path
         self.data_type = data_type
         self.transform = transform
-        self.num_frames = 22 if data_type in ["train", "val", "unlabeled"] else 11
 
-        # Pre-caching the directory contents to optimize __len__
-        self.video_list = os.listdir(self.data_path)
-        
-        print(f"Initialized dataset at {data_path} with type {data_type} and {self.num_frames} frames per video")
+        if (
+            self.data_type == "train"
+            or self.data_type == "val"
+            or self.data_type == "unlabeled"
+        ):
+            self.num_frames = 22
 
-    def __getitem__(self, index):
-        # Adjust index based on the dataset type
-        data_type_offsets = {"val": 1000, "unlabeled": 2000, "hidden": 15000}
-        index += data_type_offsets.get(self.data_type, 0)
-        
-        video_path = os.path.join(self.data_path, f"video_{index:05d}")
-        mask_path = None if self.data_type in ["hidden", "unlabeled"] else os.path.join(video_path, "mask.npy")
+        else:
+            self.num_frames = 11
 
+    def __getitem__(self, ind):
         images = []
         masks = []
 
+        if "train" in self.data_type:
+            ind = ind
+
+        elif "val" in self.data_type:
+            ind = ind + 1000
+
+        elif "unlabeled" in self.data_type:
+            ind = ind + 2000
+
+        elif "hidden" in self.data_type:
+            ind = ind + 15000
+
+        video_path = os.path.join(self.data_path, "video_{}".format(ind))
+
+        if "hidden" in self.data_type or "unlabeled" in self.data_type:
+            mask_path = None
+
+        else:
+            mask_path = os.path.join(video_path, "mask.npy")
+
         for frame in range(self.num_frames):
-            image_path = os.path.join(video_path, f"image_{frame}.png")
+            image_path = os.path.join(video_path, "image_{}.png".format(frame))
+
             image = np.array(Image.open(image_path))
+
             if self.transform:
                 image = self.transform(image)
+
             images.append(image)
 
-            if mask_path:
-                try:
-                    mask_frame_index = frame + 11 if "prediction" in self.data_type else frame
-                    mask = np.load(mask_path)[mask_frame_index]
-                except Exception as e:
-                    print(f"Error loading mask for video {index:05d}, frame {frame}: {e}")
-                    mask = torch.zeros((160, 240))  # Provide a default mask in case of failure
+            if mask_path != None:
+                if "prediction" in self.data_type:
+                    mask = np.load(mask_path)[frame + 11]
+
+                else:
+                    mask = np.load(mask_path)[frame]
+
             else:
                 mask = torch.zeros((160, 240))
 
@@ -58,7 +77,7 @@ class DLDataset(Dataset):
         return images, masks
 
     def __len__(self):
-        return len(self.video_list)
+        return len(os.listdir(self.data_path))
 
 
 transform = transforms.Compose(
@@ -71,13 +90,13 @@ transform = transforms.Compose(
     ]
 )
 
-data_path = "/home/tk3309/dataset/"
+data_path = "data/Dataset_Student"
 
-train_dataset = DLDataset(
+train_dataset = WenmaSet(
     data_path=data_path + "train", data_type="train", transform=transform
 )
 
-val_dataset = DLDataset(
+val_dataset = WenmaSet(
     data_path=data_path + "val", data_type="val", transform=transform
 )
 
@@ -128,9 +147,6 @@ class DecoderBlock(nn.Module):
         self.conv_block = ConvBlock(in_channels, out_channels)
 
     def forward(self, x, skip):
-        print("x:", x.shape, x.dtype)
-        print("skip:", skip.shape, skip.dtype)
-        
         x = self.conv_transpose(x)
         x = torch.cat([x, skip], dim=1)
         x = self.conv_block(x)
@@ -173,78 +189,71 @@ class WenmaNet(nn.Module):
 
 
 model = WenmaNet(in_channels=3, n_classes=49).to(device)
-model = nn.DataParallel(model)  # Enable DataParallel
 
 loss_fn = nn.CrossEntropyLoss()
 
-optimizer = Adam(model.parameters(), lr=0.001)
+optimizer = Adam(model.parameters(), lr=0.01)
 
 scaler = torch.cuda.amp.GradScaler()
 
-num_epochs = 50
+num_epochs = 100
 
 train_losses = []
 val_losses = []
 
 cnt = 0
 
-# Define the training loop
-for epoch in range(num_epochs):
-    model.train()  # Set model to training mode
-    train_loss = 0.0
-    val_iou_epoch = []
+for epoch in tqdm(range(num_epochs)):
+    model.train()
 
-    # Loop over the training data
+    train_loss = 0
+
     for images, masks in train_dataloader:
-        for frame in range(22):  # Assume there are 22 frames per batch
+        for frame in range(22):
             image = images[frame].to(device)
+
             mask = masks[frame].type(torch.long).to(device)
 
-            # Perform the forward pass with gradient accumulation
             with torch.cuda.amp.autocast():
                 mask_prediction = model(image)
+
                 train_loss_fn = loss_fn(mask_prediction, mask)
 
-            # Backpropagation
             optimizer.zero_grad()
+
             scaler.scale(train_loss_fn).backward()
+
             scaler.step(optimizer)
+
             scaler.update()
 
-            # Update training loss
             train_loss += train_loss_fn.item()
 
-    # Calculate and store the average train loss
-    train_losses.append(train_loss / len(train_dataloader.dataset))
-    print(f"Total Train Loss for Epoch {epoch + 1}: {train_loss:.4f}")
+            train_losses.append(train_loss)
 
-    # Validation phase
-    model.eval()  # Set model to evaluation mode
+    print("Train Loss:", train_loss)
+
+    model.eval()
+
     val_loss = 0.0
-    with torch.no_grad():  # Disable gradient calculation
+
+    with torch.no_grad():
         for images, masks in val_dataloader:
             for frame in range(22):
                 image = images[frame].to(device)
+
                 mask = masks[frame].type(torch.long).to(device)
 
                 with torch.cuda.amp.autocast():
                     mask_prediction = model(image)
+
                     val_loss_fn = loss_fn(mask_prediction, mask)
-                    iou_score = jaccard(mask_prediction.to("cpu"), mask.to("cpu"))
 
-                # Update validation loss and IoU scores
                 val_loss += val_loss_fn.item()
-                val_iou_epoch.append(iou_score.item())
 
-    # Calculate validation statistics
-    epoch_val_loss = val_loss / len(val_dataloader.dataset)
-    epoch_mean_iou = np.mean(val_iou_epoch)
-    val_losses.append(epoch_val_loss)
+                val_losses.append(val_loss)
 
-    # Print validation summary
-    print(f"Validation Summary - Epoch {epoch + 1}: Avg Loss={epoch_val_loss:.4f}, Avg IoU={epoch_mean_iou:.4f}")
-    print(f"Val Loss: {val_loss:.4f}")
-    print(f"Val IoU: {epoch_mean_iou:.4f}")
+    print("Val Loss:", val_loss)
 
 
 epochs = range(1, len(val_losses) + 1)
