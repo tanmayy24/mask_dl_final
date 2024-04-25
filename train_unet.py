@@ -10,6 +10,7 @@ from torch.optim import Adam
 from torchvision import transforms
 import torchmetrics
 device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
 jaccard = torchmetrics.classification.JaccardIndex(task="multiclass", num_classes=49)
 
 class WenmaSet(Dataset):
@@ -27,6 +28,8 @@ class WenmaSet(Dataset):
 
         else:
             self.num_frames = 11
+
+        print(f"Initialized dataset at {data_path} with type {data_type} and {self.num_frames} frames per video")
 
     def __getitem__(self, ind):
         images = []
@@ -77,7 +80,9 @@ class WenmaSet(Dataset):
         return images, masks
 
     def __len__(self):
-        return len(os.listdir(self.data_path))
+        length = len(os.listdir(self.data_path))
+        print(f"Total number of videos: {length}")
+        return length
 
 
 transform = transforms.Compose(
@@ -232,12 +237,12 @@ for epoch in tqdm(range(num_epochs)):
 
             train_losses.append(train_loss)
 
-    print("Train Loss:", train_loss)
+    print(f"Total Train Loss for Epoch {epoch+1}: {train_loss}")
 
     model.eval()
 
     val_loss = 0.0
-
+    print(f"Starting validation for Epoch {epoch+1}")
     with torch.no_grad():
         for images, masks in val_dataloader:
             for frame in range(22):
@@ -253,12 +258,14 @@ for epoch in tqdm(range(num_epochs)):
                     iou_score = jaccard(mask_prediction.to("cpu"), mask.to("cpu"))
 
                 val_loss += val_loss_fn.item()
-
-                val_losses.append(val_loss)
                 val_iou_epoch.append(iou_score.item())
 
+    epoch_val_loss = val_loss / len(val_dataloader.dataset)
+    epoch_mean_iou = np.mean(val_iou_epoch)
+    val_losses.append(epoch_val_loss)
+    print(f"Validation Summary - Epoch {epoch+1}: Avg Loss={epoch_val_loss:.4f}, Avg IoU={epoch_mean_iou:.4f}")
     print("Val Loss:", val_loss)
-    print("Val IoU:", np.mean(val_iou_epoch))
+    print("Val IoU:", epoch_mean_iou)
 
 
 epochs = range(1, len(val_losses) + 1)
