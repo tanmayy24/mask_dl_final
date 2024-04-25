@@ -11,7 +11,7 @@ from torchvision import transforms
 from .vis_utils import show_video_line
 
 # %% ../nbs/01_simvp_dataset.ipynb 3
-DEFAULT_DATA_PATH = "/home/enes/dev/maskpredformer/data/DL"
+DEFAULT_DATA_PATH = "/scratch/tk3309/dl_data/dataset/"
 
 # %% ../nbs/01_simvp_dataset.ipynb 4
 class DLDataset(Dataset):

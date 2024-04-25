@@ -90,7 +90,7 @@ transform = transforms.Compose(
     ]
 )
 
-data_path = "data/Dataset_Student"
+data_path = "/scratch/tk3309/dl_data/dataset/"
 
 train_dataset = WenmaSet(
     data_path=data_path + "train", data_type="train", transform=transform

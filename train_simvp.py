@@ -1,7 +1,6 @@
 import os
 
 import lightning as pl
-from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
 from maskpredformer.trainer import MaskSimVPModule, SampleVideoCallback
@@ -35,7 +34,7 @@ if __name__ == "__main__":
     parser.add_argument("--unlabeled", action="store_true")
     parser.add_argument("--downsample", action="store_true")
     parser.add_argument("--drop_path", type=float, default=0.0)
-    parser.add_argument("--data_root", type=str, default="data/DL/")
+    parser.add_argument("--data_root", type=str, default="/scratch/tk3309/dl_data/dataset/")
     parser.add_argument("--max_epochs", type=int, default=100)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--lr", type=float, default=1e-3)
@@ -83,7 +82,6 @@ if __name__ == "__main__":
     sample_video_cb = SampleVideoCallback(
         module.val_set, video_path=os.path.join(dirpath, "val_videos")
     )
-    logger = WandbLogger(project="mask-predformer", name="train_simvp")
     checkpoint_callback = ModelCheckpoint(
         dirpath=dirpath,
         filename="simvp_{epoch}-{val_loss:.3f}",
@@ -98,7 +96,7 @@ if __name__ == "__main__":
         accelerator="gpu",
         devices=args.devices,
         strategy=args.strategy,
-        logger=logger,
+        logger=None,
         fast_dev_run=args.fast_dev_run,
         log_every_n_steps=args.log_every_n_steps,
         val_check_interval=args.val_check_interval,
