@@ -168,7 +168,7 @@ model = nn.DataParallel(model)  # Enable DataParallel
 loss_fn = nn.CrossEntropyLoss()
 optimizer = Adam(model.parameters(), lr=0.001)
 scaler = torch.cuda.amp.GradScaler()
-num_epochs = 100
+num_epochs = 50
 train_losses = []
 val_losses = []
 
