@@ -218,7 +218,7 @@ num_epochs = 100
 
 train_losses, val_losses, ious = [], [], []
 
-for epoch in tqdm(range(num_epochs)):
+for epoch in range(num_epochs):
     train_loss = train_one_epoch(model, train_dataloader, device, optimizer, loss_fn, scaler)
     train_losses.append(train_loss)
     print(f"Total Train Loss for Epoch {epoch+1}: {train_loss:.4f}")
