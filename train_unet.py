@@ -90,7 +90,7 @@ transform = transforms.Compose(
     ]
 )
 
-data_path = "data/Dataset_Student"
+data_path = "/home/tk3309/dataset/"
 
 train_dataset = WenmaSet(
     data_path=data_path + "train", data_type="train", transform=transform
@@ -189,6 +189,7 @@ class WenmaNet(nn.Module):
 
 
 model = WenmaNet(in_channels=3, n_classes=49).to(device)
+model = nn.DataParallel(model)  # Enable DataParallel
 
 loss_fn = nn.CrossEntropyLoss()
 
