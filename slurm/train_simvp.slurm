@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# SBATCH --job-name=frame_pred
-
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=4
 #SBATCH --time=10:00:00
 #SBATCH --mem=32GB
 #SBATCH --gres=gpu:2
-#SBATCH --job-name=train-unet
+#SBATCH --job-name=frame_pred
 
 #SBATCH --output=logs/train_simvp_%j.out
 #SBATCH --requeue
