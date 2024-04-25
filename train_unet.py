@@ -185,63 +185,63 @@ val_losses = []
 
 cnt = 0
 
+# Define the training loop
 for epoch in tqdm(range(num_epochs)):
-    model.train()
+    model.train()  # Set model to training mode
+    train_loss = 0.0
     val_iou_epoch = []
-    train_loss = 0
 
+    # Loop over the training data
     for images, masks in train_dataloader:
-        for frame in range(22):
+        for frame in range(22):  # Assume there are 22 frames per batch
             image = images[frame].to(device)
-
             mask = masks[frame].type(torch.long).to(device)
 
+            # Perform the forward pass with gradient accumulation
             with torch.cuda.amp.autocast():
                 mask_prediction = model(image)
-
                 train_loss_fn = loss_fn(mask_prediction, mask)
 
+            # Backpropagation
             optimizer.zero_grad()
-
             scaler.scale(train_loss_fn).backward()
-
             scaler.step(optimizer)
-
             scaler.update()
 
+            # Update training loss
             train_loss += train_loss_fn.item()
 
-            train_losses.append(train_loss)
+    # Calculate and store the average train loss
+    train_losses.append(train_loss / len(train_dataloader.dataset))
+    print(f"Total Train Loss for Epoch {epoch + 1}: {train_loss:.4f}")
 
-    print(f"Total Train Loss for Epoch {epoch+1}: {train_loss}")
-
-    model.eval()
-
+    # Validation phase
+    model.eval()  # Set model to evaluation mode
     val_loss = 0.0
-    print(f"Starting validation for Epoch {epoch+1}")
-    with torch.no_grad():
+    with torch.no_grad():  # Disable gradient calculation
         for images, masks in val_dataloader:
             for frame in range(22):
                 image = images[frame].to(device)
-
                 mask = masks[frame].type(torch.long).to(device)
 
                 with torch.cuda.amp.autocast():
                     mask_prediction = model(image)
-
                     val_loss_fn = loss_fn(mask_prediction, mask)
-
                     iou_score = jaccard(mask_prediction.to("cpu"), mask.to("cpu"))
 
+                # Update validation loss and IoU scores
                 val_loss += val_loss_fn.item()
                 val_iou_epoch.append(iou_score.item())
 
+    # Calculate validation statistics
     epoch_val_loss = val_loss / len(val_dataloader.dataset)
     epoch_mean_iou = np.mean(val_iou_epoch)
     val_losses.append(epoch_val_loss)
-    print(f"Validation Summary - Epoch {epoch+1}: Avg Loss={epoch_val_loss:.4f}, Avg IoU={epoch_mean_iou:.4f}")
-    print("Val Loss:", val_loss)
-    print("Val IoU:", epoch_mean_iou)
+
+    # Print validation summary
+    print(f"Validation Summary - Epoch {epoch + 1}: Avg Loss={epoch_val_loss:.4f}, Avg IoU={epoch_mean_iou:.4f}")
+    print(f"Val Loss: {val_loss:.4f}")
+    print(f"Val IoU: {epoch_mean_iou:.4f}")
 
 
 epochs = range(1, len(val_losses) + 1)
