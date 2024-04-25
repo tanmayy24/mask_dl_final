@@ -79,9 +79,9 @@ if __name__ == "__main__":
     run_name = dict_to_folder_name(hparams)
     dirpath = os.path.join("checkpoints/", run_name)
 
-    sample_video_cb = SampleVideoCallback(
-        module.val_set, video_path=os.path.join(dirpath, "val_videos")
-    )
+    # sample_video_cb = SampleVideoCallback(
+    #     module.val_set, video_path=os.path.join(dirpath, "val_videos")
+    # )
     checkpoint_callback = ModelCheckpoint(
         dirpath=dirpath,
         filename="simvp_{epoch}-{val_loss:.3f}",
@@ -100,7 +100,7 @@ if __name__ == "__main__":
         fast_dev_run=args.fast_dev_run,
         log_every_n_steps=args.log_every_n_steps,
         val_check_interval=args.val_check_interval,
-        callbacks=[sample_video_cb, checkpoint_callback, lr_monitor],
+        callbacks=[checkpoint_callback, lr_monitor],
     )
     # tuner = Tuner(trainer)
     # tuner.scale_batch_size(module, mode="power")
