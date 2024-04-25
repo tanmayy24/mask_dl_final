@@ -44,7 +44,7 @@ class WenmaSet(Dataset):
         elif "hidden" in self.data_type:
             ind = ind + 15000
 
-        video_path = os.path.join(self.data_path, "video_{}".format(ind))
+        video_path = os.path.join(self.data_path, "video_{:05d}".format(ind))
 
         if "hidden" in self.data_type or "unlabeled" in self.data_type:
             mask_path = None
