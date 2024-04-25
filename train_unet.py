@@ -8,9 +8,9 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from torch.optim import Adam
 from torchvision import transforms
-
+import torchmetrics
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
+jaccard = torchmetrics.classification.JaccardIndex(task="multiclass", num_classes=49)
 
 class WenmaSet(Dataset):
     def __init__(self, data_path, data_type, transform=None):
@@ -206,7 +206,7 @@ cnt = 0
 
 for epoch in tqdm(range(num_epochs)):
     model.train()
-
+    val_iou_epoch = []
     train_loss = 0
 
     for images, masks in train_dataloader:
@@ -250,11 +250,15 @@ for epoch in tqdm(range(num_epochs)):
 
                     val_loss_fn = loss_fn(mask_prediction, mask)
 
+                    iou_score = jaccard(mask_prediction.to("cpu"), mask.to("cpu"))
+
                 val_loss += val_loss_fn.item()
 
                 val_losses.append(val_loss)
+                val_iou_epoch.append(iou_score.item())
 
     print("Val Loss:", val_loss)
+    print("Val IoU:", np.mean(val_iou_epoch))
 
 
 epochs = range(1, len(val_losses) + 1)
