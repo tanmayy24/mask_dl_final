@@ -30,8 +30,8 @@ class MaskSimVPModule(pl.LightningModule):
             in_shape, hid_S, hid_T, N_S, N_T, model_type, downsample=downsample, drop_path=drop_path,
             pre_seq_len=pre_seq_len, aft_seq_len=aft_seq_len
         )
-        self.train_set = DLDataset(data_root, "train", unlabeled=unlabeled, pre_seq_len=pre_seq_len, aft_seq_len=aft_seq_len)
-        self.val_set = DLDataset(data_root, "val", pre_seq_len=pre_seq_len, aft_seq_len=aft_seq_len)
+        self.train_set = DLDataset(data_root, "train", unlabeled=unlabeled, use_gt_data=True, pre_seq_len=pre_seq_len, aft_seq_len=aft_seq_len)
+        self.val_set = DLDataset(data_root, "val", use_gt_data=True, pre_seq_len=pre_seq_len, aft_seq_len=aft_seq_len)
         self.criterion = torch.nn.CrossEntropyLoss()
     
     def train_dataloader(self):
