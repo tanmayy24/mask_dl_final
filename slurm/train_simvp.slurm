@@ -13,10 +13,10 @@
 #SBATCH --signal=SIGUSR1@90
 #SBATCH --mail-user=tk3309@nyu.edu
 #SBATCH --mail-type=ALL
-
+git 
 singularity exec --nv \
 	    --overlay /scratch/tk3309/DL24/overlay-50G-10M.ext3:rw \
-	    /scratch/work/public/singularity/cuda11.6.124-cudnn8.4.0.27-devel-ubuntu20.04.4.sif \
+	    /scratch/tk3309/DL24/cuda11.8.86-cudnn8.7-devel-ubuntu22.04.2.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 /scratch/tk3309/mask_dl_final/train_simvp.py \
     	--downsample --lr 1e-3 --pre_seq_len=11 --aft_seq_len=1 \
     	--max_epochs 20 --devices 2 --batch_size 4 \
