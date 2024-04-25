@@ -11,7 +11,7 @@ def main(args):
     range_end = 1000 if args.split == "train" else 2000
     for i in tqdm.tqdm(range(range_start, range_end)):
         mask = np.load(
-            os.path.join(args.data_root, args.split, f"video_{i}", "mask.npy")
+            os.path.join(args.data_root, args.split, f"video_{i:05d}", "mask.npy")
         )
         all_masks.append(mask)
 
