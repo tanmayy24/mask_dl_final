@@ -128,6 +128,9 @@ class DecoderBlock(nn.Module):
         self.conv_block = ConvBlock(in_channels, out_channels)
 
     def forward(self, x, skip):
+        print("x:", x.shape, x.dtype)
+        print("skip:", skip.shape, skip.dtype)
+        
         x = self.conv_transpose(x)
         x = torch.cat([x, skip], dim=1)
         x = self.conv_block(x)
