@@ -48,14 +48,14 @@ data_loader = torch.utils.data.DataLoader(
             num_workers=1, shuffle=False, pin_memory=True
         )
 
-iou_list = []
+all_yhat = []
+all_targets = []
 jaccard = JaccardIndex(task='multiclass', num_classes=49)
 for inputs, targets in tqdm.tqdm(data_loader):
     inputs, targets = inputs.to(device), targets.to(device)
     with torch.no_grad():
         y_hat = module.sample_autoregressive(inputs, 11)
-    iou_score = jaccard(y_hat[:, -1].to("cpu"), targets[:, -1].to("cpu"))
-    iou_list.append(iou_score.item())
-
-mean_iou = np.mean(iou_list)
-print(f"The final IoU: {mean_iou}")
+    all_yhat.append(y_hat[:, -1].to("cpu"))
+    all_targets.append(targets[:, -1].to("cpu"))
+#torch.save(torch.stack(all_yhat), "val_preds.pt")
+print(f"The final IoU: {jaccard(all_yhat, torch.stack(all_targets))}")
