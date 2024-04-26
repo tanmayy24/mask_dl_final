@@ -18,7 +18,6 @@ data_root  = "/scratch/tk3309/dl_data/dataset/"
 ckpt_path = "/scratch/tk3309/mask_dl_final/slurm/checkpoints/in_shape=11-49-160-240_hid_S=64_hid_T=512_N_S=4_N_T=8_model_type=gSTA_batch_size=4_lr=0.001_weight_decay=0.0_max_epochs=20_pre_seq_len=11_aft_seq_len=1_unlabeled=False_downsample=True/simvp_epoch=19-val_loss=0.017-v1.ckpt"
 module = MaskSimVPModule.load_from_checkpoint(ckpt_path, data_root=data_root,use_gt_data=True, unlabeled=False, load_datasets=False)
 
-
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 class DLDataset(Dataset):
@@ -48,15 +47,7 @@ class DLDataset(Dataset):
         data = ep[:self.pre_seq_len].long()
         labels = ep[self.pre_seq_len:].long()
         return data, labels
-    
 
-
-@torch.no_grad()
-def get_predictions(module, x):
-    x = x.unsqueeze(0).to(module.device)
-    cur_seq = module.sample_autoregressive(x, 11)
-    y_hat = cur_seq.squeeze(0).cpu().type(torch.uint8)
-    return y_hat
 
 dataset = DLDataset(data_root, "val", use_gt_data=True, pre_seq_len=11, aft_seq_len=1)
 data_loader = torch.utils.data.DataLoader(
@@ -66,16 +57,13 @@ data_loader = torch.utils.data.DataLoader(
 
 iou_list = []
 jaccard = JaccardIndex(task='multiclass', num_classes=49)
-# Iterate over the data loader
+
 for inputs, targets in tqdm.tqdm(data_loader):
     inputs, targets = inputs.to(device), targets.to(device)
-    # Compute predictions
     with torch.no_grad():
         y_hat = module.sample_autoregressive(inputs, 11)
-    # Append predictions and targets to lists
     iou_score = jaccard(y_hat[:, -1].to("cpu"), targets[:, -1].to("cpu"))
     iou_list.append(iou_score.item())
 
-# Concatenate lists to tensors
 mean_iou = np.mean(iou_list)
 print(f"The final Jaccard Index: {mean_iou}")

@@ -48,15 +48,6 @@ class DLDataset(Dataset):
         data = ep[:self.pre_seq_len].long()
         labels = ep[self.pre_seq_len:].long()
         return data, labels
-    
-
-
-@torch.no_grad()
-def get_predictions(module, x):
-    x = x.unsqueeze(0).to(module.device)
-    cur_seq = module.sample_autoregressive(x, 11)
-    y_hat = cur_seq.squeeze(0).cpu().type(torch.uint8)
-    return y_hat
 
 dataset = DLDataset(data_root, "val", use_gt_data=True, pre_seq_len=11, aft_seq_len=1)
 data_loader = torch.utils.data.DataLoader(
@@ -66,16 +57,13 @@ data_loader = torch.utils.data.DataLoader(
 
 iou_list = []
 jaccard = JaccardIndex(task='multiclass', num_classes=49)
-# Iterate over the data loader
+
 for inputs, targets in tqdm.tqdm(data_loader):
     inputs, targets = inputs.to(device), targets.to(device)
-    # Compute predictions
     with torch.no_grad():
         y_hat = module.sample_autoregressive(inputs, 11)
-    # Append predictions and targets to lists
     iou_score = jaccard(y_hat[:, -1].to("cpu"), targets[:, -1].to("cpu"))
     iou_list.append(iou_score.item())
 
-# Concatenate lists to tensors
 mean_iou = np.mean(iou_list)
 print(f"The final Jaccard Index: {mean_iou}")

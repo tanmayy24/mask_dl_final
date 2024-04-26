@@ -3,7 +3,7 @@ import os
 import lightning as pl
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
-from maskpredformer.trainer import MaskSimVPModule, SampleVideoCallback
+from maskpredformer.trainer import MaskSimVPModule
 from maskpredformer.mask_simvp import DEFAULT_MODEL_CONFIG
 
 
@@ -78,10 +78,6 @@ if __name__ == "__main__":
     del hparams["drop_path"]
     run_name = dict_to_folder_name(hparams)
     dirpath = os.path.join("checkpoints/", run_name)
-
-    # sample_video_cb = SampleVideoCallback(
-    #     module.val_set, video_path=os.path.join(dirpath, "val_videos")
-    # )
     checkpoint_callback = ModelCheckpoint(
         dirpath=dirpath,
         filename="simvp_{epoch}-{val_loss:.3f}",
@@ -102,8 +98,6 @@ if __name__ == "__main__":
         val_check_interval=args.val_check_interval,
         callbacks=[checkpoint_callback, lr_monitor],
     )
-    # tuner = Tuner(trainer)
-    # tuner.scale_batch_size(module, mode="power")
 
     ckpt_path = os.path.join(dirpath, "last.ckpt")
     trainer.fit(module, ckpt_path=ckpt_path if os.path.exists(ckpt_path) else None)
