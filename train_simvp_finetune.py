@@ -2,7 +2,6 @@ import os
 
 import torch
 import lightning as pl
-from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
 
@@ -106,12 +105,11 @@ if __name__ == "__main__":
             "schedule_type": ss_params["schedule_type"],
         }
     )
-    dirpath = os.path.join("checkpoints/", run_name)
+    dirpath = os.path.join("checkpoints_finetune/", run_name)
 
     sample_video_cb = SampleAutoRegressiveVideoCallback(
         module.val_set, video_path=os.path.join(dirpath, "val_videos")
     )
-    logger = WandbLogger(project="mask-predformer", name="gSTA_SS")
     checkpoint_callback = ModelCheckpoint(
         dirpath=dirpath,
         filename="simvp_ss_{epoch}-{valid_last_frame_iou:.3f}",
@@ -126,13 +124,13 @@ if __name__ == "__main__":
         accelerator="gpu",
         devices=args.devices,
         strategy=args.strategy,
-        logger=logger,
+        logger=None,
         limit_train_batches=args.limit_train_batches,
         limit_val_batches=args.limit_val_batches,
         fast_dev_run=args.fast_dev_run,
         log_every_n_steps=args.log_every_n_steps,
         val_check_interval=args.val_check_interval,
-        callbacks=[sample_video_cb, checkpoint_callback, lr_monitor],
+        callbacks=[checkpoint_callback, lr_monitor],
     )
     # tuner = Tuner(trainer)
     # tuner.scale_batch_size(module, mode="power")
