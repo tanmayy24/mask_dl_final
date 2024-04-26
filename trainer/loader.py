@@ -48,7 +48,7 @@ class DLDataset(Dataset):
 
 class ValMetricDLDataset(Dataset):
     def __init__(self, root):
-        self.val_x_dataset = DLDataset(root, "val")
+        self.val_x_dataset = DLDataset(root, "val", use_gt_data=True)
         self.val_y_dataset = DLDataset(root, "val", use_gt_data=True)
     
     def __len__(self):
