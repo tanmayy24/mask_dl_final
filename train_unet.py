@@ -71,7 +71,7 @@ class WenmaSet(Dataset):
                     else:
                         # Handle the case where the index is out of bounds
                         print(f"Index {frame + 11} out of bounds for mask array with length {len(mask_array)}. Using zero mask.")
-                        mask = torch.zeros((160, 240))
+                        mask = torch.zeros((160, 240), dtype=torch.long)
                 else:
                     # Ensure the index is within bounds for other data types
                     if frame < len(mask_array):
@@ -79,12 +79,12 @@ class WenmaSet(Dataset):
                     else:
                         # Handle the case where the index is out of bounds
                         print(f"Index {frame} out of bounds for mask array with length {len(mask_array)}. Using zero mask.")
-                        mask = torch.zeros((160, 240))
+                        mask = torch.zeros((160, 240), dtype=torch.long)
             else:
                 # Use a zero mask if no mask path is provided
-                mask = torch.zeros((160, 240))
+                mask = torch.zeros((160, 240), dtype=torch.long)
 
-            masks.append(mask)
+            masks.append(mask.type(torch.long))
         
         return images, masks
 
