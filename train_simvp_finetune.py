@@ -106,9 +106,6 @@ if __name__ == "__main__":
     )
     dirpath = os.path.join("checkpoints_finetune/", run_name)
 
-    sample_video_cb = SampleAutoRegressiveVideoCallback(
-        module.val_set, video_path=os.path.join(dirpath, "val_videos")
-    )
     checkpoint_callback = ModelCheckpoint(
         dirpath=dirpath,
         filename="simvp_ss_{epoch}-{valid_last_frame_iou:.3f}",
