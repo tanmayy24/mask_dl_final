@@ -12,7 +12,7 @@
 #SBATCH --signal=SIGUSR1@90
 #SBATCH --mail-user=tk3309@nyu.edu
 #SBATCH --mail-type=ALL
-git 
+
 singularity exec --nv \
 	    --overlay /scratch/tk3309/DL24/overlay-50G-10M.ext3:rw \
 	    /scratch/tk3309/DL24/cuda11.8.86-cudnn8.7-devel-ubuntu22.04.2.sif \
