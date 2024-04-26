@@ -16,7 +16,6 @@ import random
 import numpy as np
 
 from .mask_simvp import MaskSimVP
-from .vis_utils import show_gif 
 from .simvp_dataset import DLDataset, ValMetricDLDataset
 
 # %% ../nbs/04_scheduled_sampling_trainer.ipynb 3
@@ -145,42 +144,3 @@ class MaskSimVPScheduledSamplingModule(pl.LightningModule):
         )
 
         return optimizer
-
-# %% ../nbs/04_scheduled_sampling_trainer.ipynb 13
-class SampleAutoRegressiveVideoCallback(pl.Callback):
-    def __init__(self, val_set, video_path="./val_videos/"):
-        super().__init__()
-        self.val_set = val_set
-        self.val_count = 0
-        self.val_path = video_path
-        if not os.path.exists(self.val_path):
-            os.makedirs(self.val_path)
-
-    def generate_video(self, pl_module):
-        pl_module.eval()
-        sample_idx = random.randint(0, len(self.val_set)-1)
-
-        x, y = self.val_set[sample_idx]
-        x = x.unsqueeze(0).to(pl_module.device)
-        y = y.unsqueeze(0).to(pl_module.device)
-        
-        cur_seq = pl_module.sample_autoregressive(x, 11)
-
-        # convert to numpy
-        x = x.squeeze(0).cpu().numpy()
-        y = y.squeeze(0).cpu().numpy()
-        y_hat = cur_seq.squeeze(0).cpu().numpy()
-
-        gif_path = os.path.join(self.val_path, f"val_ar_video_{self.val_count}.gif")
-
-        show_gif(x, y, y_hat, out_path=gif_path)
-        self.val_count += 1
-
-        return gif_path
-    
-    def on_validation_epoch_end(self, trainer, pl_module):
-        if trainer.global_rank == 0:
-            gif_path = self.generate_video(pl_module)
-            trainer.logger.experiment.log({
-                "val_video": wandb.Video(gif_path, fps=4, format="gif")
-            })

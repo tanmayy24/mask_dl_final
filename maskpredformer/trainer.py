@@ -14,7 +14,6 @@ import wandb
 import random
 
 from .mask_simvp import MaskSimVP, DEFAULT_MODEL_CONFIG
-from .vis_utils import show_gif
 from .simvp_dataset import DLDataset, DEFAULT_DATA_PATH
 
 # %% ../nbs/02_trainer.ipynb 3
