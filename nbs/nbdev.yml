@@ -1,9 +1,0 @@
-project:
-  output-dir: _docs
-
-website:
-  title: "maskpredformer"
-  site-url: "https://eneserciyes.github.io/maskpredformer"
-  description: "maskpredformer for DL term project"
-  repo-branch: main
-  repo-url: "https://github.com/eneserciyes/maskpredformer"
