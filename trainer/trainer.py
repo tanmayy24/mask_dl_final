@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import wandb
 import random
 
-from .mask_simvp import MaskSimVP, DEFAULT_MODEL_CONFIG
-from .simvp_dataset import DLDataset, DEFAULT_DATA_PATH
+from .simvp_model import MaskSimVP, DEFAULT_MODEL_CONFIG
+from .loader import DLDataset, DEFAULT_DATA_PATH
 
 class MaskSimVPModule(pl.LightningModule):
     def __init__(self, 

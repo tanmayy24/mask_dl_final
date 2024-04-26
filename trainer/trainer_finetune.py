@@ -11,8 +11,8 @@ import math
 import random
 import numpy as np
 
-from .mask_simvp import MaskSimVP
-from .simvp_dataset import DLDataset, ValMetricDLDataset
+from .simvp_model import MaskSimVP
+from .loader import DLDataset, ValMetricDLDataset
 def inv_sigmoid_schedule(x, n, k):
     y = k / (k+math.exp(((x-(n//2))/(n//20))/k))
     return y

@@ -10,7 +10,7 @@ import torch
 from torchmetrics import JaccardIndex
 from lightning import seed_everything
 
-from maskpredformer.scheduled_sampling_trainer import MaskSimVPScheduledSamplingModule
+from trainer.trainer_finetune import MaskSimVPScheduledSamplingModule
 seed_everything(0)
 torch.backends.cudnn.deterministic = True
 

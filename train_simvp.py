@@ -3,8 +3,8 @@ import os
 import lightning as pl
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
-from maskpredformer.trainer import MaskSimVPModule
-from maskpredformer.mask_simvp import DEFAULT_MODEL_CONFIG
+from trainer.trainer import MaskSimVPModule
+from trainer.simvp_model import DEFAULT_MODEL_CONFIG
 
 
 def list_to_folder_name(l):

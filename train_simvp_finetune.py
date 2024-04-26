@@ -6,7 +6,7 @@ from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
 
-from maskpredformer.scheduled_sampling_trainer import (
+from trainer.trainer_finetune import (
     MaskSimVPScheduledSamplingModule,
     SampleAutoRegressiveVideoCallback,
 )

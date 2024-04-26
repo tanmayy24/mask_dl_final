@@ -16,5 +16,5 @@
 singularity exec --nv \
 	    --overlay /scratch/tk3309/DL24/overlay-50G-10M.ext3:rw \
 	    /scratch/tk3309/DL24/cuda11.8.86-cudnn8.7-devel-ubuntu22.04.2.sif \
-	    /bin/bash -c "source /ext3/env.sh; python /scratch/tk3309/mask_dl_final/train_simvp_ss.py --simvp_path simvp_epoch=16-val_loss=0.014.ckpt \
+	    /bin/bash -c "source /ext3/env.sh; python /scratch/tk3309/mask_dl_final/train_simvp_finetune.py --simvp_path simvp_epoch=16-val_loss=0.014.ckpt \
 		--max_epochs 100 --sample_step_inc_every_n_epoch 20 --batch_size 4 --check_val_every_n_epoch 2"
