@@ -22,21 +22,14 @@ module = MaskSimVPScheduledSamplingModule.load_from_checkpoint(ckpt_path, data_r
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 class DLDataset(Dataset):
-    def __init__(self, root, mode, unlabeled=False, use_gt_data=False, pre_seq_len=11, aft_seq_len=11, ep_len=22):
+    def __init__(self, root, mode, use_gt_data=False, pre_seq_len=11, aft_seq_len=11):
         if use_gt_data:
             self.mask_path = os.path.join(root, f"{mode}_gt_masks.pt")
         else:
             self.mask_path = os.path.join(root, f"{mode}_masks.pt")
-            
         self.mode = mode
         print("INFO: Loading masks from", self.mask_path)
-        if unlabeled:
-            self.masks = torch.cat([
-                torch.load(self.mask_path), 
-                torch.load(os.path.join(root, f"unlabeled_masks.pt")).squeeze()
-            ], dim=0)
-        else:
-            self.masks = torch.load(self.mask_path)
+        self.masks = torch.load(self.mask_path)
         self.pre_seq_len=pre_seq_len
         self.aft_seq_len=aft_seq_len
 
@@ -57,7 +50,6 @@ data_loader = torch.utils.data.DataLoader(
 
 iou_list = []
 jaccard = JaccardIndex(task='multiclass', num_classes=49)
-
 for inputs, targets in tqdm.tqdm(data_loader):
     inputs, targets = inputs.to(device), targets.to(device)
     with torch.no_grad():
@@ -66,4 +58,4 @@ for inputs, targets in tqdm.tqdm(data_loader):
     iou_list.append(iou_score.item())
 
 mean_iou = np.mean(iou_list)
-print(f"The final Jaccard Index: {mean_iou}")
+print(f"The final IoU: {mean_iou}")
