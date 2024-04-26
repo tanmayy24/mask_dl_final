@@ -62,14 +62,26 @@ class WenmaSet(Dataset):
 
             images.append(image)
 
-            if mask_path != None:
+            if mask_path is not None:
+                mask_array = np.load(mask_path)  # Load the mask once
                 if "prediction" in self.data_type:
-                    mask = np.load(mask_path)[frame + 11]
-
+                    # Ensure the index is within bounds for prediction type
+                    if frame + 11 < len(mask_array):
+                        mask = mask_array[frame + 11]
+                    else:
+                        # Handle the case where the index is out of bounds
+                        print(f"Index {frame + 11} out of bounds for mask array with length {len(mask_array)}. Using zero mask.")
+                        mask = torch.zeros((160, 240))
                 else:
-                    mask = np.load(mask_path)[frame]
-
+                    # Ensure the index is within bounds for other data types
+                    if frame < len(mask_array):
+                        mask = mask_array[frame]
+                    else:
+                        # Handle the case where the index is out of bounds
+                        print(f"Index {frame} out of bounds for mask array with length {len(mask_array)}. Using zero mask.")
+                        mask = torch.zeros((160, 240))
             else:
+                # Use a zero mask if no mask path is provided
                 mask = torch.zeros((160, 240))
 
             masks.append(mask)
