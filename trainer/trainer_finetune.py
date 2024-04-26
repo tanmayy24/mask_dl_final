@@ -35,7 +35,7 @@ class MaskSimVPScheduledSamplingModule(pl.LightningModule):
             pre_seq_len=pre_seq_len, aft_seq_len=aft_seq_len
         )
         if load_datasets:
-            self.train_set = DLDataset(data_root, "train", unlabeled=unlabeled, use_gt_data=use_gt_data, pre_seq_len=pre_seq_len, aft_seq_len=max_sample_steps+1)
+            self.train_set = DLDataset(data_root, "train", unlabeled=unlabeled, use_gt_data=True, pre_seq_len=pre_seq_len, aft_seq_len=max_sample_steps+1)
             self.val_set = ValMetricDLDataset(data_root)
             self.schedule_max = (len(self.train_set)//batch_size) * sample_step_inc_every_n_epoch
             print(f"Schedule max: {self.schedule_max}")
