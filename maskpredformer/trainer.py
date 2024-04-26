@@ -46,6 +46,15 @@ class MaskSimVPModule(pl.LightningModule):
             num_workers=8, shuffle=False, pin_memory=True
         )
 
+    @torch.no_grad()
+    def sample_autoregressive(self, x, t):
+        cur_seq = x.clone()
+        for _ in range(t):
+            y_hat_logit_t = self.model(cur_seq)
+            y_hat = torch.argmax(y_hat_logit_t, dim=2) # get current prediction
+            cur_seq = torch.cat([cur_seq[:, 1:], y_hat], dim=1) # autoregressive concatenation
+        return cur_seq
+
     def step(self, x, y):
         y_hat_logits = self.model(x)
         return y_hat_logits
