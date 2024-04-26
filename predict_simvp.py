@@ -14,9 +14,9 @@ from maskpredformer.trainer import MaskSimVPModule
 seed_everything(0)
 torch.backends.cudnn.deterministic = True
 
-
+data_root  = "/teamspace/studios/this_studio/mask_dl_final/data/DL/"
 ckpt_path = "simvp_epoch=16-val_loss=0.014.ckpt"
-module = MaskSimVPModule.load_from_checkpoint(ckpt_path, data_root="/teamspace/studios/this_studio/mask_dl_final/data/DL/",use_gt_data=True, unlabeled=False, load_datasets=False)
+module = MaskSimVPModule.load_from_checkpoint(ckpt_path, data_root=data_root,use_gt_data=True, unlabeled=False, load_datasets=False)
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -69,7 +69,7 @@ def get_predictions(module, x):
     y_hat = cur_seq.squeeze(0).cpu().type(torch.uint8)
     return y_hat
 
-dataset = DLDataset("/teamspace/studios/this_studio/mask_dl_final/data/DL/", "val", use_gt_data=True, pre_seq_len=11, aft_seq_len=1)
+dataset = DLDataset(data_root, "val", use_gt_data=True, pre_seq_len=11, aft_seq_len=1)
 data_loader = torch.utils.data.DataLoader(
             dataset, batch_size=16, 
             num_workers=1, shuffle=False, pin_memory=True
