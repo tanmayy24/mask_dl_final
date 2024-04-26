@@ -9,7 +9,6 @@ from trainer.trainer_finetune import (
     MaskSimVPScheduledSamplingModule,
 )
 
-
 def list_to_folder_name(l):
     return "-".join([str(x) for x in l])
 
@@ -128,8 +127,6 @@ if __name__ == "__main__":
         val_check_interval=args.val_check_interval,
         callbacks=[checkpoint_callback, lr_monitor],
     )
-    # tuner = Tuner(trainer)
-    # tuner.scale_batch_size(module, mode="power")
 
     ckpt_path = os.path.join(dirpath, "last.ckpt")
     trainer.fit(module, ckpt_path=ckpt_path if os.path.exists(ckpt_path) else None)
