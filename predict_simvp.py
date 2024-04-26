@@ -15,8 +15,8 @@ seed_everything(0)
 torch.backends.cudnn.deterministic = True
 
 
-ckpt_path = "checkpoints/simvp_ss_epoch=2-valid_last_frame_iou=0.456.ckpt"
-module = MaskSimVPModule.load_from_checkpoint(ckpt_path, use_gt_data=True, unlabeled=False, load_datasets=False)
+ckpt_path = "simvp_epoch=16-val_loss=0.014.ckpt"
+module = MaskSimVPModule.load_from_checkpoint(ckpt_path, data_root="/teamspace/studios/this_studio/mask_dl_final/data/DL/",use_gt_data=True, unlabeled=False, load_datasets=False)
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -69,17 +69,28 @@ def get_predictions(module, x):
     y_hat = cur_seq.squeeze(0).cpu().type(torch.uint8)
     return y_hat
 
-dataset = DLDataset("/scratch/tk3309/dl_data/dataset/", "val", use_gt_data=True, pre_seq_len=11, aft_seq_len=1)
+dataset = DLDataset("/teamspace/studios/this_studio/mask_dl_final/data/DL/", "val", use_gt_data=True, pre_seq_len=11, aft_seq_len=1)
 data_loader = torch.utils.data.DataLoader(
             dataset, batch_size=8, 
             num_workers=1, shuffle=False, pin_memory=True
         )
 all_yhat = []
 all_targets = []
-for inputs, targets in enumerate(data_loader):
-    y_hat = get_predictions(module, inputs)
-    all_yhat.append(y_hat[-1].cpu())
-    all_targets.append(targets[-1].cpu())
-
 jaccard = JaccardIndex(task='multiclass', num_classes=49)
-print(jaccard(all_yhat, torch.stack(all_targets)))
+# Iterate over the data loader
+for inputs, targets in tqdm.tqdm(data_loader):
+    inputs, targets = inputs.to(device), targets.to(device)
+    # Compute predictions
+    with torch.no_grad():
+        y_hat = module.sample_autoregressive(inputs, 11)
+    # Append predictions and targets to lists
+    all_yhat.append(y_hat[:, -1])
+    all_targets.append(targets[:, -1])
+
+# Concatenate lists to tensors
+all_yhat_tensor = torch.cat(all_yhat).cpu()
+all_targets_tensor = torch.cat(all_targets).cpu()
+
+# Calculate the Jaccard Index
+final_iou = jaccard(all_yhat_tensor, all_targets_tensor)
+print(f"The final Jaccard Index: {final_iou}")
