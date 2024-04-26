@@ -5,7 +5,6 @@ from torch.utils.data import Dataset
 import torch
 import os
 from torchvision import transforms
-from .vis_utils import show_video_line
 
 DEFAULT_DATA_PATH = "/scratch/tk3309/dl_data/dataset/"
 class DLDataset(Dataset):
