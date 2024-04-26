@@ -72,7 +72,7 @@ def get_predictions(module, x):
 dataset = DLDataset(data_root, "val", use_gt_data=True, pre_seq_len=11, aft_seq_len=1)
 data_loader = torch.utils.data.DataLoader(
             dataset, batch_size=16, 
-            num_workers=8, shuffle=False, pin_memory=True
+            num_workers=1, shuffle=False, pin_memory=True
         )
 
 iou_list = []
