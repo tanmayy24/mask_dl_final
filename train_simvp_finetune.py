@@ -7,7 +7,6 @@ from lightning.pytorch.tuner import Tuner
 
 from trainer.trainer_finetune import (
     MaskSimVPScheduledSamplingModule,
-    SampleAutoRegressiveVideoCallback,
 )
 
 
