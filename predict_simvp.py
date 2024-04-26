@@ -37,25 +37,14 @@ class DLDataset(Dataset):
             ], dim=0)
         else:
             self.masks = torch.load(self.mask_path)
-        self.transform = transforms.Compose([
-            transforms.RandomHorizontalFlip(p=0.5),
-        ])
         self.pre_seq_len=pre_seq_len
         self.aft_seq_len=aft_seq_len
-        self.seq_per_ep = ep_len - (pre_seq_len + aft_seq_len) + 1
 
     def __len__(self):
-        return self.masks.shape[0] * self.seq_per_ep
+        return self.masks.shape[0]
     
     def __getitem__(self, idx):
-        ep_idx = idx // self.seq_per_ep
-        offset = idx % self.seq_per_ep
-        total_len = self.pre_seq_len + self.aft_seq_len
-        
-        if self.mode == "train":
-            ep = self.transform(self.masks[ep_idx, offset:offset+total_len])
-        else:
-            ep = self.masks[ep_idx, offset:offset+total_len]
+        ep = self.masks[idx]
         data = ep[:self.pre_seq_len].long()
         labels = ep[self.pre_seq_len:].long()
         return data, labels
@@ -71,7 +60,7 @@ def get_predictions(module, x):
 
 dataset = DLDataset(data_root, "val", use_gt_data=True, pre_seq_len=11, aft_seq_len=1)
 data_loader = torch.utils.data.DataLoader(
-            dataset, batch_size=16, 
+            dataset, batch_size=32, 
             num_workers=1, shuffle=False, pin_memory=True
         )
 
