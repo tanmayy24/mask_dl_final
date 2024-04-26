@@ -57,5 +57,9 @@ for inputs, targets in tqdm.tqdm(data_loader):
         y_hat = module.sample_autoregressive(inputs, 11)
     all_yhat.append(y_hat[:, -1].to("cpu"))
     all_targets.append(targets[:, -1].to("cpu"))
-#torch.save(torch.stack(all_yhat), "val_preds.pt")
-print(f"The final IoU: {jaccard(all_yhat, torch.stack(all_targets))}")
+
+all_targets_tensor = torch.cat(all_targets, dim=0)
+all_yhat_tensor = torch.cat(all_yhat, dim=0)
+
+#torch.save(all_yhat_tensor, "val_preds.pt")
+print(f"The final IoU: {jaccard(all_yhat_tensor, all_targets_tensor)}")

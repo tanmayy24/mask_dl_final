@@ -61,7 +61,5 @@ for inputs, targets in tqdm.tqdm(data_loader):
 all_targets_tensor = torch.cat(all_targets, dim=0)
 all_yhat_tensor = torch.cat(all_yhat, dim=0)
 
-print(all_targets_tensor.shape)
-print(all_yhat_tensor.shape)
 #torch.save(all_yhat_tensor, "val_preds.pt")
 print(f"The final IoU: {jaccard(all_yhat_tensor, all_targets_tensor)}")
