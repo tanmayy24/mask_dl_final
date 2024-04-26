@@ -71,7 +71,7 @@ def get_predictions(module, x):
 
 dataset = DLDataset("/teamspace/studios/this_studio/mask_dl_final/data/DL/", "val", use_gt_data=True, pre_seq_len=11, aft_seq_len=1)
 data_loader = torch.utils.data.DataLoader(
-            dataset, batch_size=8, 
+            dataset, batch_size=16, 
             num_workers=1, shuffle=False, pin_memory=True
         )
 all_yhat = []
