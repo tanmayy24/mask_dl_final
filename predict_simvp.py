@@ -74,8 +74,8 @@ data_loader = torch.utils.data.DataLoader(
             dataset, batch_size=16, 
             num_workers=1, shuffle=False, pin_memory=True
         )
-all_yhat = []
-all_targets = []
+
+iou_list = []
 jaccard = JaccardIndex(task='multiclass', num_classes=49)
 # Iterate over the data loader
 for inputs, targets in tqdm.tqdm(data_loader):
@@ -84,13 +84,9 @@ for inputs, targets in tqdm.tqdm(data_loader):
     with torch.no_grad():
         y_hat = module.sample_autoregressive(inputs, 11)
     # Append predictions and targets to lists
-    all_yhat.append(y_hat[:, -1])
-    all_targets.append(targets[:, -1])
+    iou_score = jaccard(y_hat[:, -1].to("cpu"), targets[:, -1].to("cpu"))
+    iou_list.append(iou_score.item())
 
 # Concatenate lists to tensors
-all_yhat_tensor = torch.cat(all_yhat).cpu()
-all_targets_tensor = torch.cat(all_targets).cpu()
-
-# Calculate the Jaccard Index
-final_iou = jaccard(all_yhat_tensor, all_targets_tensor)
-print(f"The final Jaccard Index: {final_iou}")
+mean_iou = np.mean(iou_list)
+print(f"The final Jaccard Index: {mean_iou}")
