@@ -14,8 +14,8 @@ from maskpredformer.trainer import MaskSimVPModule
 seed_everything(0)
 torch.backends.cudnn.deterministic = True
 
-data_root  = "/teamspace/studios/this_studio/mask_dl_final/data/DL/"
-ckpt_path = "simvp_epoch=16-val_loss=0.014.ckpt"
+data_root  = "/scratch/tk3309/dl_data/dataset/"
+ckpt_path = "/scratch/tk3309/simvp_epoch=16-val_loss=0.014.ckpt"
 module = MaskSimVPModule.load_from_checkpoint(ckpt_path, data_root=data_root,use_gt_data=True, unlabeled=False, load_datasets=False)
 
 
