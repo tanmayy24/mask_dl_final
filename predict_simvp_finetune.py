@@ -23,6 +23,7 @@ class DLDataset(Dataset):
     def __init__(self, root, mode, use_gt_data=False, pre_seq_len=11, aft_seq_len=1):
         mask_type = "gt_masks.pt" if use_gt_data else "masks.pt"
         self.mask_path = os.path.join(root, f"{mode}_{mask_type}")
+        print(f"INFO: Loading masks from {self.mask_path}")
         self.masks = torch.load(self.mask_path)
         self.pre_seq_len = pre_seq_len
         self.aft_seq_len = aft_seq_len
@@ -39,6 +40,7 @@ class DLDataset(Dataset):
 def evaluate_model(data_loader, model, device):
     all_yhat = []
     all_targets = []
+    print("INFO: Starting model evaluation...")
     jaccard_index = JaccardIndex(task='multiclass', num_classes=49)
     for inputs, targets in tqdm(data_loader, desc="Evaluating model"):
         inputs, targets = inputs.to(device), targets.to(device)
@@ -49,6 +51,7 @@ def evaluate_model(data_loader, model, device):
 
     all_yhat_tensor = torch.cat(all_yhat)
     all_targets_tensor = torch.cat(all_targets)
+    print("INFO: Model evaluation completed.")
     return all_yhat_tensor, all_targets_tensor, jaccard_index
 
 def main(config):
@@ -58,7 +61,8 @@ def main(config):
     dataset = DLDataset(config["data_root"], "val", use_gt_data=True)
     data_loader = DataLoader(dataset, batch_size=32, num_workers=1, shuffle=False, pin_memory=True)
     predictions, targets, jaccard = evaluate_model(data_loader, module, config["device"])
-    torch.save(predictions, "val_preds.pt")
+    torch.save(predictions, "val_preds_finetune.pt")
+    print("INFO: Predictions saved to 'val_preds_finetune.pt'.")
     print(f"The final IoU: {jaccard(predictions, targets)}")
 
 if __name__ == "__main__":

@@ -38,6 +38,7 @@ class DLDataset(Dataset):
 def evaluate_model(data_loader, model, device):
     all_yhat = []
     all_targets = []
+    print("INFO: Starting model evaluation...")
     jaccard = JaccardIndex(task='multiclass', num_classes=49)
     for inputs, targets in tqdm(data_loader):
         inputs, targets = inputs.to(device), targets.to(device)
@@ -53,6 +54,7 @@ def main():
     data_loader = DataLoader(dataset, batch_size=32, num_workers=1, shuffle=False, pin_memory=True)
     all_yhat_tensor, all_targets_tensor, jaccard = evaluate_model(data_loader, module, device)
     #torch.save(all_yhat_tensor, "val_preds.pt")
+    print("INFO: Predictions saved to 'val_preds.pt'.")
     print(f"The final IoU: {jaccard(all_yhat_tensor, all_targets_tensor)}")
 
 if __name__ == "__main__":
