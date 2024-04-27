@@ -51,7 +51,6 @@ def evaluate_model(data_loader, model, device):
 
     all_yhat_tensor = torch.cat(all_yhat)
     all_targets_tensor = torch.cat(all_targets)
-    print("INFO: Model evaluation completed.")
     return all_yhat_tensor, all_targets_tensor, jaccard_index
 
 def main(config):
