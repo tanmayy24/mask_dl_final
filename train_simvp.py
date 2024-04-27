@@ -82,7 +82,7 @@ if __name__ == "__main__":
         dirpath=dirpath,
         filename="simvp_{epoch}-{val_loss:.3f}",
         monitor="val_loss",
-        save_top_k=5,
+        save_top_k=3,
         mode="min",
         save_last=True,
     )
