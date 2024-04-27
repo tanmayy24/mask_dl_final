@@ -15,9 +15,8 @@ seed_everything(0)
 torch.backends.cudnn.deterministic = True
 
 data_root  = "/scratch/tk3309/dl_data/dataset/"
-ckpt_path = "simvp_ss_epoch=2-valid_last_frame_iou=0.456.ckpt"
+ckpt_path = "/scratch/tk3309/mask_dl_final/slurm/checkpoints_finetune/method=SS_simvp=simvp_epoch=19-val_loss=0.017-v1.ckpt_inc_every_n_epoch=20_max_sample_steps=5_schedule_k=1.05_unlabeled=False_use_gt_data=False_schedule_type=exponential"
 module = MaskSimVPScheduledSamplingModule.load_from_checkpoint(ckpt_path, data_root=data_root,use_gt_data=True, unlabeled=False, load_datasets=False)
-
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
