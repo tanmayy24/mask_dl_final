@@ -30,13 +30,13 @@ class MaskSimVPModule(pl.LightningModule):
     def train_dataloader(self):
         return torch.utils.data.DataLoader(
             self.train_set, batch_size=self.hparams.batch_size, 
-            num_workers=8, shuffle=True, pin_memory=True
+            num_workers=1, shuffle=True, pin_memory=True
         )
 
     def val_dataloader(self):
         return torch.utils.data.DataLoader(
             self.val_set, batch_size=self.hparams.batch_size, 
-            num_workers=8, shuffle=False, pin_memory=True
+            num_workers=1, shuffle=False, pin_memory=True
         )
 
     @torch.no_grad()
