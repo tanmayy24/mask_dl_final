@@ -13,18 +13,15 @@ class DLDataset(Dataset):
         self.mask_path = os.path.join(root, f"{mode}_gt_masks.pt")
         self.mode = mode
         print("INFO: Loading masks from", self.mask_path)
+        self.unlabeled = unlabeled
         if unlabeled:
             print("INFO: Using unlabeled masks for training!")
-            # Load the first numpy file
             self.mask1 = torch.load(self.mask_path)
-            # Load the second numpy file and squeeze if necessary
             self.mask2 = np.load(os.path.join(root, "unlabeled_path.npy"))
             print("INFO: The number of unlabeled masks:",  self.mask2.size)
-            # Concatenate the tensors along dim=0
             self.masks = self.mask1.shape[0]+self.mask2.size
         else:
             self.masks = torch.load(self.mask_path)
-        print("INFO: The number of masks:",  self.masks.shape[0])
         self.transform = transforms.Compose([
             transforms.RandomHorizontalFlip(p=0.5),
         ])
@@ -33,23 +30,35 @@ class DLDataset(Dataset):
         self.seq_per_ep = ep_len - (pre_seq_len + aft_seq_len) + 1
 
     def __len__(self):
-        if(self.mode == "train"):
+        if(self.mode == "train" and self.unlabeled):
+            print("INFO: The number of total masks:",  self.masks* self.seq_per_ep)
             return self.masks* self.seq_per_ep
-        return self.masks.shape[0] * self.seq_per_ep
+        else:
+            print("INFO: The number of total masks:",  self.masks.shape[0] * self.seq_per_ep)
+            return self.masks.shape[0] * self.seq_per_ep
     
     def __getitem__(self, idx):
-        sys.exit()
-        ep_idx = idx // self.seq_per_ep
-        offset = idx % self.seq_per_ep
-        total_len = self.pre_seq_len + self.aft_seq_len
-        
+        episode_index = idx // self.seq_per_ep
+        sequence_offset = idx % self.seq_per_ep
+        total_length = self.pre_seq_len + self.aft_seq_len
         if self.mode == "train":
-            ep = self.transform(self.masks[ep_idx, offset:offset+total_len])
+            if self.unlabeled:
+                if 0 <= episode_index <= 999:
+                    episode_data = self.transform(self.masks[episode_index, sequence_offset:sequence_offset+total_length])
+                else:
+                    try:
+                        path_to_load = self.mask2[episode_index]
+                        loaded_mask = torch.load(path_to_load)
+                        episode_data = loaded_mask[sequence_offset:sequence_offset+total_length]
+                    except FileNotFoundError:
+                        raise Exception(f"Mask file not found: {path_to_load}")
+            else:
+                episode_data = self.transform(self.masks[episode_index, sequence_offset:sequence_offset+total_length])
         else:
-            ep = self.masks[ep_idx, offset:offset+total_len]
-        data = ep[:self.pre_seq_len].long()
-        labels = ep[self.pre_seq_len:].long()
-        return data, labels
+            episode_data = self.masks[episode_index, sequence_offset:sequence_offset+total_length]
+        input_data = episode_data[:self.pre_seq_len].long()
+        labels = episode_data[self.pre_seq_len:].long()
+        return input_data, labels
 
 class ValMetricDLDataset(Dataset):
     def __init__(self, root):
