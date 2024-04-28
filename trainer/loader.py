@@ -31,10 +31,10 @@ class DLDataset(Dataset):
 
     def __len__(self):
         if(self.mode == "train" and self.unlabeled):
-            print("INFO: The number of total masks:",  self.masks* self.seq_per_ep)
+            print("INFO: The number of total masks:",  self.masks)
             return self.masks* self.seq_per_ep
         else:
-            print("INFO: The number of total masks:",  self.masks.shape[0] * self.seq_per_ep)
+            print("INFO: The number of total masks:",  self.masks.shape[0])
             return self.masks.shape[0] * self.seq_per_ep
     
     def __getitem__(self, idx):
