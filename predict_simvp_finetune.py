@@ -91,10 +91,10 @@ def main(config):
     )
     dataset = MetricDLDataset(config["data_root"], set_to_predict)
     data_loader = DataLoader(dataset, batch_size=32, num_workers=1, shuffle=False, pin_memory=True)
-    predictions, targets, jaccard = evaluate_model(data_loader, module, config["device"])
+    predictions, targets = evaluate_model(data_loader, module, config["device"])
     torch.save(predictions, "val_preds_finetune.pt")
     print("INFO: Predictions saved to 'val_preds_finetune.pt'.")
-    print(f"The final validation IoU: {jaccard(predictions, targets)}")
+    print(f"The final validation IoU: {jaccard_index(predictions, targets)}")
     
 def predict_hidden(config):
     module = MaskSimVPScheduledSamplingModule.load_from_checkpoint(
