@@ -14,7 +14,7 @@ DEFAULT_MODEL_CONFIG = {
     'hid_T': 512,
     'N_S': 4,
     'N_T': 8,
-    'model_type': 'tau',
+    'model_type': 'gSTA',
 }
 
 class MaskSimVP(nn.Module):
