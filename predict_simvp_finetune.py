@@ -113,7 +113,7 @@ def predict_hidden(config):
     all_yhat_tensor = torch.cat(all_yhat)
     print(f"The shape of predictions:", all_yhat_tensor.shape)
     torch.save(all_yhat_tensor, "hidden_preds_finetune.pt")
-    print("INFO: Predictions saved to 'hidden_preds_finetune.pt'.")
+    print("INFO: Predictions saved to 'hidden_preds_team3.pt'.")
 
 if __name__ == "__main__":
     main(config)
