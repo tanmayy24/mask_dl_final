@@ -93,6 +93,7 @@ def main(config):
     data_loader = DataLoader(dataset, batch_size=32, num_workers=1, shuffle=False, pin_memory=True)
     predictions, targets = evaluate_model(data_loader, module, config["device"])
     torch.save(predictions, "val_preds_finetune.pt")
+    print(f"The shape of predictions:", predictions.shape)
     print("INFO: Predictions saved to 'val_preds_finetune.pt'.")
     print(f"The final validation IoU: {jaccard_index(predictions, targets)}")
     
@@ -110,7 +111,7 @@ def predict_hidden(config):
             y_hat = module.sample_autoregressive(inputs, 11)
         all_yhat.append(y_hat[:, -1].cpu())
     all_yhat_tensor = torch.cat(all_yhat)
-    print(all_yhat_tensor.shape)
+    print(f"The shape of predictions:", all_yhat_tensor.shape)
     torch.save(all_yhat_tensor, "hidden_preds_finetune.pt")
     print("INFO: Predictions saved to 'hidden_preds_finetune.pt'.")
 
