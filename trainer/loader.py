@@ -43,14 +43,15 @@ class DLDataset(Dataset):
         sequence_offset = idx % self.seq_per_ep
         total_length = self.pre_seq_len + self.aft_seq_len
         if self.mode == "train":
+            print("EP",episode_index)
             if self.unlabeled:
                 if 0 <= episode_index <= 999:
                     episode_data = self.transform(self.mask1[episode_index, sequence_offset:sequence_offset+total_length])
                 else:
                     try:
                         path_to_load = self.mask2[episode_index]
-                        loaded_mask = torch.load(path_to_load)
                         print(path_to_load)
+                        loaded_mask = torch.load(path_to_load)
                         episode_data = self.transform(loaded_mask[sequence_offset:sequence_offset+total_length])
                     except FileNotFoundError:
                         raise Exception(f"Mask file not found: {path_to_load}")
