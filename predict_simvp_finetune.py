@@ -15,7 +15,7 @@ torch.backends.cudnn.deterministic = True
 # Configuration settings
 config = {
     "data_root": DEFAULT_DATA_PATH,
-    "ckpt_path" : "/scratch/tk3309/mask_dl_final/slurm/checkpoints_finetune/method=SS_simvp=simvp_epoch=18-val_loss=0.014.ckpt_inc_every_n_epoch=20_max_sample_steps=5_schedule_k=1.05_unlabeled=False_use_gt_data=False_schedule_type=exponential/simvp_ss_epoch=9-valid_last_frame_iou=0.458.ckpt",
+    "ckpt_path" : "/scratch/tk3309/mask_dl_final/slurm/checkpoints_finetune/method=SS_simvp=simvp_epoch=18-val_loss=0.014.ckpt_inc_every_n_epoch=20_max_sample_steps=5_schedule_k=1.05_unlabeled=False_use_gt_data=False_schedule_type=exponential/simvp_ss_epoch=6-valid_last_frame_iou=0.458.ckpt",
     "device": "cuda" if torch.cuda.is_available() else "cpu"
 }
 jaccard_index = JaccardIndex(task='multiclass', num_classes=49)
