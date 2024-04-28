@@ -38,18 +38,16 @@ class DLDataset(Dataset):
             return self.masks.shape[0] * self.seq_per_ep
     
     def __getitem__(self, idx):
-        print("HERE I AM", idx)
         episode_index = idx // self.seq_per_ep
         sequence_offset = idx % self.seq_per_ep
         total_length = self.pre_seq_len + self.aft_seq_len
         if self.mode == "train":
-            print("EP",episode_index)
             if self.unlabeled:
                 if 0 <= episode_index <= 999:
                     episode_data = self.transform(self.mask1[episode_index, sequence_offset:sequence_offset+total_length])
                 else:
                     try:
-                        path_to_load = self.mask2[episode_index]
+                        path_to_load = self.mask2[episode_index-1000]
                         npy_data = np.load(path_to_load)
                         loaded_mask = torch.from_numpy(npy_data)
                         episode_data = self.transform(loaded_mask[sequence_offset:sequence_offset+total_length])
