@@ -21,7 +21,7 @@ class DLDataset(Dataset):
             self.mask2 = np.load(os.path.join(root, "unlabeled_path.npy"))
             print("INFO: The number of unlabeled masks:",  self.mask2.size[0])
             # Concatenate the tensors along dim=0
-            self.masks = self.mask1.shape[0]+self.mask2.size[0]
+            self.masks = self.mask1.shape[0]+self.mask2.size()
         else:
             self.masks = torch.load(self.mask_path)
         print("INFO: The number of masks:",  self.masks.shape[0])
