@@ -8,6 +8,7 @@ def process_batch(batch, output_file, mode='a'):
     np.save(output_file, stacked_batch, allow_pickle=False, fix_imports=False)
     if mode == 'a':
         with open(output_file, 'ab') as f:  # Append mode for file
+            print(stacked_batch.size())
             np.save(f, stacked_batch)
 
 def main(args):
@@ -21,7 +22,6 @@ def main(args):
         mask_path = os.path.join(args.data_root, f"video_{i:05d}_mask.npy")
         if os.path.exists(mask_path):
             mask = np.load(mask_path)
-            print(f"Loaded mask shape for video {i}: {mask.shape}")
             current_batch.append(mask)
             if len(current_batch) >= batch_size:
                 process_batch(current_batch, args.output_file)
