@@ -18,6 +18,7 @@ class DLDataset(Dataset):
         self.mode = mode
         print("INFO: Loading masks from", self.mask_path)
         if unlabeled:
+            print("INFO: Using unlabeled masks for training!")
             # Load the first numpy file
             mask1 = torch.load(self.mask_path)
             # Load the second numpy file and squeeze if necessary
