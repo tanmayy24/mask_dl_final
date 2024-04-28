@@ -5,6 +5,7 @@ from torch.utils.data import Dataset
 import torch
 import os
 from torchvision import transforms
+import numpy as np
 
 
 class DLDataset(Dataset):
@@ -17,10 +18,13 @@ class DLDataset(Dataset):
         self.mode = mode
         print("INFO: Loading masks from", self.mask_path)
         if unlabeled:
-            self.masks = torch.cat([
-                torch.load(self.mask_path), 
-                torch.load(os.path.join(root, f"unlabeled_masks.npy")).squeeze()
-            ], dim=0)
+            # Load the first numpy file
+            mask1 = torch.load(self.mask_path)
+            # Load the second numpy file and squeeze if necessary
+            mask2 = torch.from_numpy(np.load(os.path.join(root, "unlabeled_masks.npy")))
+
+            # Concatenate the tensors along dim=0
+            self.masks = torch.cat([mask1, mask2], dim=0)
         else:
             self.masks = torch.load(self.mask_path)
         self.transform = transforms.Compose([
