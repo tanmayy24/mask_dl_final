@@ -50,8 +50,8 @@ class DLDataset(Dataset):
                 else:
                     try:
                         path_to_load = self.mask2[episode_index]
-                        print(path_to_load)
-                        loaded_mask = torch.load(path_to_load)
+                        npy_data = np.load(path_to_load)
+                        loaded_mask = torch.from_numpy(npy_data)
                         episode_data = self.transform(loaded_mask[sequence_offset:sequence_offset+total_length])
                     except FileNotFoundError:
                         raise Exception(f"Mask file not found: {path_to_load}")
