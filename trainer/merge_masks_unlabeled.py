@@ -4,7 +4,6 @@ import os
 import numpy as np
 import tqdm
 
-
 def main(args):
     all_masks = []
     range_start = 2000 
@@ -25,7 +24,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--data_root", type=str, default="/scratch/rn2214/labeled/")
-    parser.add_argument("--split", type=str, default="unlabeled")
     parser.add_argument(
         "--output_file", type=str, default="unlabeled_masks.pt"
     )
