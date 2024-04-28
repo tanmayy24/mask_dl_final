@@ -6,16 +6,7 @@ import torch.nn as nn
 import torch
 
 
-DEFAULT_MODEL_CONFIG = {
-    # For MetaVP models, the most important hyperparameters are: 
-    # N_S, N_T, hid_S, hid_T, model_type
-    'in_shape': [11, 3, 160, 240],
-    'hid_S': 64,
-    'hid_T': 512,
-    'N_S': 4,
-    'N_T': 8,
-    'model_type': 'gSTA',
-}
+
 
 class MaskSimVP(nn.Module):
     def __init__(self, in_shape, hid_S, hid_T, N_S, N_T, model_type, pre_seq_len=11, aft_seq_len=11, drop_path=0.0, downsample=False):

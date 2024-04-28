@@ -5,7 +5,7 @@ from torchvision import transforms
 from tqdm import tqdm
 from torchmetrics import JaccardIndex
 from lightning import seed_everything
-from trainer.loader import DEFAULT_DATA_PATH, SEED
+from trainer.config import DEFAULT_DATA_PATH, SEED
 from trainer.trainer_finetune import MaskSimVPScheduledSamplingModule
 
 # Set up seeds and GPU options

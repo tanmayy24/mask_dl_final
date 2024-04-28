@@ -3,7 +3,7 @@ import os
 import lightning as pl
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
-from trainer.loader import DEFAULT_DATA_PATH, SEED
+from trainer.config import DEFAULT_DATA_PATH, SEED
 from trainer.trainer import MaskSimVPModule
 from trainer.simvp_model import DEFAULT_MODEL_CONFIG
 
