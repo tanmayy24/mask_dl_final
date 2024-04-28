@@ -5,8 +5,6 @@ from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
 from trainer.config import DEFAULT_DATA_PATH, SEED
 from trainer.trainer import MaskSimVPModule
-from trainer.simvp_model import DEFAULT_MODEL_CONFIG
-
 
 def list_to_folder_name(l):
     return "-".join([str(x) for x in l])
