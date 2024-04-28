@@ -2,7 +2,7 @@
 
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=8
-#SBATCH --time=24:00:00
+#SBATCH --time=25:00:00
 #SBATCH --mem=64GB
 #SBATCH --gres=gpu:4
 #SBATCH --job-name=frame_pred
