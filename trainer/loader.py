@@ -45,7 +45,7 @@ class DLDataset(Dataset):
         if self.mode == "train":
             if self.unlabeled:
                 if 0 <= episode_index <= 999:
-                    episode_data = self.transform(self.masks[episode_index, sequence_offset:sequence_offset+total_length])
+                    episode_data = self.transform(self.mask1[episode_index, sequence_offset:sequence_offset+total_length])
                 else:
                     try:
                         path_to_load = self.mask2[episode_index]
