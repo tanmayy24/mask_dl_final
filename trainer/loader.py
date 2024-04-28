@@ -38,6 +38,7 @@ class DLDataset(Dataset):
             return self.masks.shape[0] * self.seq_per_ep
     
     def __getitem__(self, idx):
+        print("HERE I AM", idx)
         episode_index = idx // self.seq_per_ep
         sequence_offset = idx % self.seq_per_ep
         total_length = self.pre_seq_len + self.aft_seq_len
@@ -49,7 +50,7 @@ class DLDataset(Dataset):
                     try:
                         path_to_load = self.mask2[episode_index]
                         loaded_mask = torch.load(path_to_load)
-                        episode_data = loaded_mask[sequence_offset:sequence_offset+total_length]
+                        episode_data = self.transform(loaded_mask[sequence_offset:sequence_offset+total_length])
                     except FileNotFoundError:
                         raise Exception(f"Mask file not found: {path_to_load}")
             else:
