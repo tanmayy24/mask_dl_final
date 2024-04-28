@@ -6,14 +6,15 @@ from torchvision import transforms
 from tqdm import tqdm
 from torchmetrics import JaccardIndex
 from lightning import seed_everything
+from trainer.loader import DEFAULT_DATA_PATH, SEED
 from trainer.trainer import MaskSimVPModule
 
 # Setting seeds and deterministic behavior
-seed_everything(0)
+seed_everything(SEED)
 torch.backends.cudnn.deterministic = True
 
 # Configuration settings
-data_root = "/scratch/tk3309/dl_data/dataset/"
+data_root = DEFAULT_DATA_PATH
 ckpt_path = "/scratch/tk3309/mask_dl_final/slurm/checkpoints/in_shape=11-49-160-240_hid_S=64_hid_T=512_N_S=4_N_T=8_model_type=gSTA_batch_size=4_lr=0.001_weight_decay=0.0_max_epochs=20_pre_seq_len=11_aft_seq_len=1_unlabeled=False_downsample=True/simvp_epoch=19-val_loss=0.017-v1.ckpt"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -49,11 +50,12 @@ def evaluate_model(data_loader, model, device):
     return torch.cat(all_yhat), torch.cat(all_targets), jaccard
 
 def main():
+    set_to_predict = "val"
     module = MaskSimVPModule.load_from_checkpoint(ckpt_path, data_root=data_root, use_gt_data=True, unlabeled=False, load_datasets=False)
-    dataset = DLDataset(data_root, "val", use_gt_data=True)
+    dataset = DLDataset(data_root, set_to_predict, use_gt_data=True)
     data_loader = DataLoader(dataset, batch_size=32, num_workers=1, shuffle=False, pin_memory=True)
     all_yhat_tensor, all_targets_tensor, jaccard = evaluate_model(data_loader, module, device)
-    #torch.save(all_yhat_tensor, "val_preds.pt")
+    torch.save(all_yhat_tensor, "val_preds.pt")
     print("INFO: Predictions saved to 'val_preds.pt'.")
     print(f"The final IoU: {jaccard(all_yhat_tensor, all_targets_tensor)}")
 

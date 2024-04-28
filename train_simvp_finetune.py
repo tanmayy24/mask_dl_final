@@ -5,6 +5,7 @@ import lightning as pl
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
 
+from trainer.loader import SEED
 from trainer.trainer_finetune import (
     MaskSimVPScheduledSamplingModule,
 )
@@ -72,7 +73,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    pl.seed_everything(42)
+    pl.seed_everything(SEED)
 
     mask_sim_vp_ckpt = torch.load(args.simvp_path)
 

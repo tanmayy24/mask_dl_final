@@ -3,6 +3,7 @@ import os
 import lightning as pl
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
+from trainer.loader import DEFAULT_DATA_PATH, SEED
 from trainer.trainer import MaskSimVPModule
 from trainer.simvp_model import DEFAULT_MODEL_CONFIG
 
@@ -34,7 +35,7 @@ if __name__ == "__main__":
     parser.add_argument("--unlabeled", action="store_true")
     parser.add_argument("--downsample", action="store_true")
     parser.add_argument("--drop_path", type=float, default=0.0)
-    parser.add_argument("--data_root", type=str, default="/scratch/tk3309/dl_data/dataset/")
+    parser.add_argument("--data_root", type=str, default=DEFAULT_DATA_PATH)
     parser.add_argument("--max_epochs", type=int, default=100)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--lr", type=float, default=1e-3)
@@ -54,7 +55,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    pl.seed_everything(42)
+    pl.seed_everything(SEED)
     module = MaskSimVPModule(
         in_shape=args.in_shape,
         hid_S=args.hid_S,

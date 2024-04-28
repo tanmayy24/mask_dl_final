@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 import torch
 import os
 from torchvision import transforms
-
+SEED = 42
 DEFAULT_DATA_PATH = "/scratch/tk3309/dl_data/dataset/"
 class DLDataset(Dataset):
     def __init__(self, root, mode, unlabeled=False, use_gt_data=False, pre_seq_len=11, aft_seq_len=11, ep_len=22):

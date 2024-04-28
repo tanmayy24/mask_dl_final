@@ -5,15 +5,16 @@ from torchvision import transforms
 from tqdm import tqdm
 from torchmetrics import JaccardIndex
 from lightning import seed_everything
+from trainer.loader import DEFAULT_DATA_PATH, SEED
 from trainer.trainer_finetune import MaskSimVPScheduledSamplingModule
 
 # Set up seeds and GPU options
-seed_everything(0)
+seed_everything(SEED)
 torch.backends.cudnn.deterministic = True
 
 # Configuration settings
 config = {
-    "data_root": "/scratch/tk3309/dl_data/dataset/",
+    "data_root": DEFAULT_DATA_PATH,
     "ckpt_path" : "/scratch/tk3309/mask_dl_final/slurm/checkpoints_finetune/method=SS_simvp=simvp_epoch=19-val_loss=0.017-v1.ckpt_inc_every_n_epoch=20_max_sample_steps=5_schedule_k=1.05_unlabeled=False_use_gt_data=False_schedule_type=exponential/simvp_ss_epoch=39-valid_last_frame_iou=0.402.ckpt",
     "device": "cuda" if torch.cuda.is_available() else "cpu"
 }
@@ -54,10 +55,11 @@ def evaluate_model(data_loader, model, device):
     return all_yhat_tensor, all_targets_tensor, jaccard_index
 
 def main(config):
+    set_to_predict = "val"
     module = MaskSimVPScheduledSamplingModule.load_from_checkpoint(
         config["ckpt_path"], data_root=config["data_root"], use_gt_data=True, unlabeled=False, load_datasets=False
     )
-    dataset = DLDataset(config["data_root"], "val", use_gt_data=True)
+    dataset = DLDataset(config["data_root"],set_to_predict, use_gt_data=True)
     data_loader = DataLoader(dataset, batch_size=32, num_workers=1, shuffle=False, pin_memory=True)
     predictions, targets, jaccard = evaluate_model(data_loader, module, config["device"])
     torch.save(predictions, "val_preds_finetune.pt")
