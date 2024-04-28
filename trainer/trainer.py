@@ -9,7 +9,7 @@ import wandb
 import random
 
 from .simvp_model import MaskSimVP
-from .loader import DLDataset, DEFAULT_DATA_PATH
+from .loader import DLDataset
 
 class MaskSimVPModule(pl.LightningModule):
     def __init__(self, 
