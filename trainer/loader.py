@@ -10,22 +10,18 @@ import numpy as np
 
 class DLDataset(Dataset):
     def __init__(self, root, mode, unlabeled=False, use_gt_data=False, pre_seq_len=11, aft_seq_len=11, ep_len=22):
-        if use_gt_data:
-            self.mask_path = os.path.join(root, f"{mode}_gt_masks.pt")
-        else:
-            self.mask_path = os.path.join(root, f"{mode}_masks.pt")
-            
+        self.mask_path = os.path.join(root, f"{mode}_gt_masks.pt")
         self.mode = mode
         print("INFO: Loading masks from", self.mask_path)
         if unlabeled:
             print("INFO: Using unlabeled masks for training!")
             # Load the first numpy file
-            mask1 = torch.load(self.mask_path)
+            self.mask1 = torch.load(self.mask_path)
             # Load the second numpy file and squeeze if necessary
-            mask2 = torch.from_numpy(np.load(os.path.join(root, "unlabeled_masks.npy")))
-            print("INFO: The number of unlabeled masks:",  mask2.shape[0])
+            self.mask2 = torch.from_numpy(np.load(os.path.join(root, "unlabeled_path.npy")))
+            print("INFO: The number of unlabeled masks:",  self.mask2.size[0])
             # Concatenate the tensors along dim=0
-            self.masks = torch.cat([mask1, mask2], dim=0)
+            self.masks = self.mask1.shape[0]+self.mask2.size[0]
         else:
             self.masks = torch.load(self.mask_path)
         print("INFO: The number of masks:",  self.masks.shape[0])
@@ -37,9 +33,12 @@ class DLDataset(Dataset):
         self.seq_per_ep = ep_len - (pre_seq_len + aft_seq_len) + 1
 
     def __len__(self):
+        if(self.mode == "train"):
+            return self.masks* self.seq_per_ep
         return self.masks.shape[0] * self.seq_per_ep
     
     def __getitem__(self, idx):
+        sys.exit()
         ep_idx = idx // self.seq_per_ep
         offset = idx % self.seq_per_ep
         total_len = self.pre_seq_len + self.aft_seq_len
