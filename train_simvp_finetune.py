@@ -76,8 +76,8 @@ if __name__ == "__main__":
     pl.seed_everything(SEED)
 
     mask_sim_vp_ckpt = torch.load(args.simvp_path)
-
     ss_params = mask_sim_vp_ckpt["hyper_parameters"]
+    ss_params["data_root"]=args.data_root
     ss_params["sample_step_inc_every_n_epoch"] = args.sample_step_inc_every_n_epoch
     ss_params["max_sample_steps"] = args.max_sample_steps
     ss_params["schedule_k"] = args.schedule_k
