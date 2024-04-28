@@ -28,6 +28,7 @@ class DLDataset(Dataset):
             self.masks = torch.cat([mask1, mask2], dim=0)
         else:
             self.masks = torch.load(self.mask_path)
+        print("INFO: The number of masks:",  self.masks.shape[0])
         self.transform = transforms.Compose([
             transforms.RandomHorizontalFlip(p=0.5),
         ])
