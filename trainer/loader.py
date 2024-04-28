@@ -23,8 +23,7 @@ class DLDataset(Dataset):
             mask1 = torch.load(self.mask_path)
             # Load the second numpy file and squeeze if necessary
             mask2 = torch.from_numpy(np.load(os.path.join(root, "unlabeled_masks.npy")))
-            print(mask2.shape)
-            sys.exit()
+            print("INFO: The number of unlabeled masks:",  mask2.shape[0])
             # Concatenate the tensors along dim=0
             self.masks = torch.cat([mask1, mask2], dim=0)
         else:
