@@ -5,7 +5,7 @@ import lightning as pl
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
 
-from trainer.loader import SEED
+from trainer.config import SEED
 from trainer.trainer_finetune import (
     MaskSimVPScheduledSamplingModule,
 )
