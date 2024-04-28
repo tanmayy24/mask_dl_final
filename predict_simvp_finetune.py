@@ -86,29 +86,29 @@ def evaluate_model(data_loader, model, device):
 
 def main(config):
     set_to_predict = "val"
-    module = MaskSimVPScheduledSamplingModule.load_from_checkpoint(
+    model = MaskSimVPScheduledSamplingModule.load_from_checkpoint(
         config["ckpt_path"], data_root=config["data_root"], use_gt_data=True, unlabeled=False, load_datasets=False
     )
     dataset = MetricDLDataset(config["data_root"], set_to_predict)
     data_loader = DataLoader(dataset, batch_size=32, num_workers=1, shuffle=False, pin_memory=True)
-    predictions, targets = evaluate_model(data_loader, module, config["device"])
+    predictions, targets = evaluate_model(data_loader, model, config["device"])
     torch.save(predictions, "val_preds_finetune.pt")
     print(f"The shape of predictions:", predictions.shape)
     print("INFO: Predictions saved to 'val_preds_finetune.pt'.")
     print(f"The final validation IoU: {jaccard_index(predictions, targets)}")
     
 def predict_hidden(config):
-    module = MaskSimVPScheduledSamplingModule.load_from_checkpoint(
+    model = MaskSimVPScheduledSamplingModule.load_from_checkpoint(
         config["ckpt_path"], data_root=config["data_root"], use_gt_data=True, unlabeled=False, load_datasets=False
     )
     hidden_dataset = HiddenDLDataset(config["data_root"])
     hidden_data_loader = DataLoader(hidden_dataset, batch_size=32, num_workers=1, shuffle=False, pin_memory=True)
     all_yhat = []
-    print("INFO: Starting model evaluation...for hidden dataset")
+    print("INFO: Starting model predictions...for hidden dataset")
     for inputs in tqdm(hidden_data_loader, desc="Hidden Prediction model"):
         inputs = inputs.to(config["device"])
         with torch.no_grad():
-            y_hat = module.sample_autoregressive(inputs, 11)
+            y_hat = model.sample_autoregressive(inputs, 11)
         all_yhat.append(y_hat[:, -1].cpu())
     all_yhat_tensor = torch.cat(all_yhat)
     print(f"The shape of predictions:", all_yhat_tensor.shape)
