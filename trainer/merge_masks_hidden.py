@@ -7,8 +7,8 @@ import tqdm
 
 def main(args):
     all_masks = []
-    range_start = 0 if args.split == "train" else 1000
-    range_end = 1000 if args.split == "train" else 2000
+    range_start = 0 if args.split == "train" else 15000
+    range_end = 1000 if args.split == "train" else 19999
     for i in tqdm.tqdm(range(range_start, range_end)):
         mask = np.load(
             os.path.join(args.data_root, f"video_{i:05d}_mask.npy")
@@ -24,10 +24,10 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--data_root", type=str, default="/scratch/rn2214/labeled/val/")
-    parser.add_argument("--split", type=str, default="val")
+    parser.add_argument("--data_root", type=str, default="/scratch/rn2214/labeled/hidden/")
+    parser.add_argument("--split", type=str, default="hidden")
     parser.add_argument(
-        "--output_file", type=str, default="val_pred_masks.pt"
+        "--output_file", type=str, default="hidden_pred_masks.pt"
     )
 
     args = parser.parse_args()
