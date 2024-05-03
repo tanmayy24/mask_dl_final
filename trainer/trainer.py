@@ -54,20 +54,26 @@ class MaskSimVPModule(pl.LightningModule):
     
     def training_step(self, batch, batch_idx): 
         x, y = batch
-        y_hat_logits = self.step(x, y).view(-1, *y.shape[2:])
-        y = y.view(-1, *y.shape[2:])
+        y_hat_logits = self.step(x, y)
+        b, t, *_ = y_hat_logits.shape
+        y_hat_logits = y_hat_logits.view(b*t, *y_hat_logits.shape[2:])
+        y = y.view(b*t, *y.shape[2:])
+
         loss = self.criterion(y_hat_logits, y)
         self.log("train_loss", loss)
         return loss
     
     def validation_step(self, batch, batch_idx):
         x, y = batch
-        y_hat_logits = self.step(x, y).view(-1, *y.shape[2:])
-        y = y.view(-1, *y.shape[2:])
+        y_hat_logits = self.step(x, y)
+        b, t, *_ = y_hat_logits.shape
+        y_hat_logits = y_hat_logits.view(b*t, *y_hat_logits.shape[2:])
+        y = y.view(b*t, *y.shape[2:])
+       
         loss = self.criterion(y_hat_logits, y)
         self.log("val_loss", loss, sync_dist=True)
         return loss
-    
+
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(
             self.parameters(), lr=self.hparams.lr, 
