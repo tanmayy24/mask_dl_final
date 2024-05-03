@@ -1,3 +1,5 @@
+### Team 3 - batch_size=3
+
 # Frame Prediction for Synthetic Videos
 
 ## Overview
@@ -11,7 +13,7 @@ To leverage advanced machine learning techniques to predict future video frames,
 - **Details**: Videos featuring 48 different objects, each with unique combinations of shape, material, and color.
 
 ## Evaluation Metric
-- **Intersection-over-Union (IoU)**: Also known as Jaccard Similarity Index, it measures the accuracy of the predicted video frames against the ground truth.
+- **Intersection-over-Union (IoU)**: Also known as the Jaccard Similarity Index, it measures the accuracy of the predicted video frames against the ground truth.
 
 ## Model Architecture
 1. **Segmentation**: Uses U-Net for generating accurate masks of video frames.
@@ -25,16 +27,24 @@ To leverage advanced machine learning techniques to predict future video frames,
 Ensure you have Python and pip installed on your system.
 
 ### Install Dependencies
-pip install -r requirements.txt
+```pip install -r requirements.txt```
+
+```
+git clone git@github.com:chengtan9907/OpenSTL.git](https://github.com/chengtan9907/OpenSTL.git
+```
+```
+cd <path_to_OpenSTL>
+pip install -e .
+```
 
 ### Usage
 
 #### Training the model:
-python train.py
+`python train.py`
 
 This will train the initial U-Net and SimVP models and save the checkpoints.
 #### Fine-tuning the model:
-python finetune.py --simvp_path <path-to-simvp-checkpoint>
+`python finetune.py --simvp_path <path-to-simvp-checkpoint>`
 
 Replace <path-to-simvp-checkpoint> with the path to your trained model checkpoint from the initial training phase.
 
