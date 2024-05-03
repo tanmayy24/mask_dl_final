@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import wandb
 import random
 
-from .simvp_model import MaskSimVP
+from .model import MaskSimVP
 from .loader import DLDataset
 
 class MaskSimVPModule(pl.LightningModule):

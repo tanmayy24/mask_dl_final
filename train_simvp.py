@@ -22,7 +22,7 @@ if __name__ == "__main__":
     
     module = MaskSimVPModule(
         in_shape=[11, 49, 160, 240], hid_S=64, hid_T=512, N_S=4, N_T=8,
-        model_type="gSTA", data_root=args.data_root, batch_size=8, lr=1e-3,
+        model_type="gSTA", data_root=args.data_root, batch_size=64, lr=1e-3,
         weight_decay=0.0, max_epochs=20, downsample=True, pre_seq_len=11,
         aft_seq_len=1
     )
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     lr_monitor = LearningRateMonitor(logging_interval="step")
     
     trainer = pl.Trainer(
-        max_epochs=20, accelerator="gpu", devices=1,
+        max_epochs=20, accelerator="gpu", devices=4,
         strategy="ddp_find_unused_parameters_true", logger=None, fast_dev_run=False,
         log_every_n_steps=100, val_check_interval=0.5,
         callbacks=[checkpoint_callback, lr_monitor]

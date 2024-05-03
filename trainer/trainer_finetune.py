@@ -6,16 +6,12 @@ import os
 import lightning as pl
 from torchmetrics import JaccardIndex
 
-import wandb
 import math
 import random
 import numpy as np
 
-from .simvp_model import MaskSimVP
+from .model import MaskSimVP
 from .loader import DLDataset, ValMetricDLDataset
-def inv_sigmoid_schedule(x, n, k):
-    y = k / (k+math.exp(((x-(n//2))/(n//20))/k))
-    return y
 
 def exp_schedule(x, n, k=np.e):
     t = 100 * np.maximum((x / n)-0.033,0)
@@ -50,12 +46,7 @@ class MaskSimVPScheduledSamplingModule(pl.LightningModule):
         self.sampled_count = 0
 
     def get_p(self):
-        if self.hparams.schedule_type == "exponential":
-            p = 1-exp_schedule(self.schedule_idx, self.schedule_max, self.hparams.schedule_k)
-        elif self.hparams.schedule_type == "inverse_sigmoid":
-            p = 1 - inv_sigmoid_schedule(self.schedule_idx, self.schedule_max, self.hparams.schedule_k)
-        else:
-            raise NotImplementedError(f"Schedule type {self.hparams.schedule_type} not implemented")
+        p = 1-exp_schedule(self.schedule_idx, self.schedule_max, self.hparams.schedule_k)
         return p
 
     def sample_or_not(self):
