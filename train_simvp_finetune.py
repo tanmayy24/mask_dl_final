@@ -30,11 +30,11 @@ if __name__ == "__main__":
     # Trainer arguments
     parser.add_argument("--log_every_n_steps", type=int, default=100)
     parser.add_argument("--val_check_interval", type=float, default=1.0)
-    parser.add_argument("--check_val_every_n_epoch", type=int, default=1)
+    parser.add_argument("--check_val_every_n_epoch", type=int, default=2)
     parser.add_argument("--limit_train_batches", type=float, default=1.0)
     parser.add_argument("--limit_val_batches", type=float, default=1.0)
     parser.add_argument("--fast_dev_run", action="store_true")
-    parser.add_argument("--batch_size", type=int, default=1)
+    parser.add_argument("--batch_size", type=int, default=16)
     parser.add_argument("--lr", type=float, default=1e-4)
 
     # Hyperparameters for the model
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--sample_step_inc_every_n_epoch",
         type=int,
-        default=1,
+        default=20,
         help="how many epochs to increase sample step by 1",
     )
     parser.add_argument(
@@ -64,11 +64,10 @@ if __name__ == "__main__":
     )
     parser.add_argument("--schedule_type", type=str, default="exponential")
     parser.add_argument("--unlabeled", action="store_true")
-    parser.add_argument("--max_epochs", type=int, default=10)
+    parser.add_argument("--max_epochs", type=int, default=20)
     parser.add_argument("--use_gt_data", action="store_true")
     parser.add_argument("--data_root", type=str, default=DEFAULT_DATA_PATH)
     # MultiGPU
-    parser.add_argument("--devices", type=int, default=1)
     parser.add_argument("--strategy", type=str, default="auto")
 
     args = parser.parse_args()
@@ -118,7 +117,7 @@ if __name__ == "__main__":
     trainer = pl.Trainer(
         max_epochs=module.hparams.max_epochs,
         accelerator="gpu",
-        devices=args.devices,
+        devices=2,
         strategy=args.strategy,
         logger=None,
         limit_train_batches=args.limit_train_batches,
