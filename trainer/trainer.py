@@ -21,7 +21,7 @@ class SIMVP(LightningModule):
         return torch.utils.data.DataLoader(self.val_set, batch_size=self.hparams.batch_size, num_workers=8, shuffle=False, pin_memory=True)
 
     @torch.no_grad()
-    def sample_autoregressive(self, x, t):
+    def generatenext(self, x, t):
         cur_seq = x.clone()
         for _ in range(t):
             y_hat_logit_t = self.model(cur_seq)
