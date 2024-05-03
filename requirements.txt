@@ -1,0 +1,7 @@
+torch
+torchvision
+pytorch-lightning
+numpy
+tqdm
+matplotlib
+imageio
