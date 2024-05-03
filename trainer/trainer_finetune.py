@@ -13,7 +13,6 @@ import numpy as np
 
 from .simvp_model import MaskSimVP
 from .loader import DLDataset, ValMetricDLDataset
-
 def inv_sigmoid_schedule(x, n, k):
     y = k / (k+math.exp(((x-(n//2))/(n//20))/k))
     return y
@@ -21,9 +20,8 @@ def inv_sigmoid_schedule(x, n, k):
 def exp_schedule(x, n, k=np.e):
     t = 100 * np.maximum((x / n)-0.033,0)
     return k ** -t
-
 class MaskSimVPScheduledSamplingModule(pl.LightningModule):
-    def __init__(self,
+    def __init__(self, 
                  in_shape, hid_S, hid_T, N_S, N_T, model_type,
                  batch_size, lr, weight_decay, max_epochs, data_root, use_gt_data,
                  sample_step_inc_every_n_epoch, schedule_k=1.05, max_sample_steps=5,
@@ -43,10 +41,10 @@ class MaskSimVPScheduledSamplingModule(pl.LightningModule):
             print(f"Schedule max: {self.schedule_max}")
         else:
             self.schedule_max = -1 # dummy value
-
+        
         self.criterion = torch.nn.CrossEntropyLoss()
         self.iou_metric = JaccardIndex(task='multiclass', num_classes=49)
-
+        
         self.schedule_idx = 0
         self.sample_steps = 1
         self.sampled_count = 0
@@ -65,16 +63,16 @@ class MaskSimVPScheduledSamplingModule(pl.LightningModule):
         p = self.get_p()
         self.schedule_idx += 1
         return random.random() < p
-
+    
     def train_dataloader(self):
         return torch.utils.data.DataLoader(
-            self.train_set, batch_size=self.hparams.batch_size,
+            self.train_set, batch_size=self.hparams.batch_size, 
             num_workers=8, shuffle=True, pin_memory=True
         )
 
     def val_dataloader(self):
         return torch.utils.data.DataLoader(
-            self.val_set, batch_size=self.hparams.batch_size,
+            self.val_set, batch_size=self.hparams.batch_size, 
             num_workers=8, shuffle=False, pin_memory=True
         )
 
@@ -86,7 +84,7 @@ class MaskSimVPScheduledSamplingModule(pl.LightningModule):
             y_hat = torch.argmax(y_hat_logit_t, dim=2) # get current prediction
             cur_seq = torch.cat([cur_seq[:, 1:], y_hat], dim=1) # autoregressive concatenation
         return cur_seq
-
+    
     def training_step(self, batch, batch_idx):
         x, y = batch
         if self.sample_or_not():
@@ -96,16 +94,16 @@ class MaskSimVPScheduledSamplingModule(pl.LightningModule):
         else:
             # no change in x
             y = y[:, 0:1] # get the normal training label
-
+        
         y_hat_logits = self.model(x)
-
+        
         # Flatten batch and time dimensions
         b, t, *_ = y_hat_logits.shape
         y_hat_logits = y_hat_logits.view(b*t, *y_hat_logits.shape[2:])
         y = y.view(b*t, *y.shape[2:])
 
         loss = self.criterion(y_hat_logits, y)
-
+        
         self.log("train_loss", loss)
         if self.logger:
             self.logger.log_metrics(
@@ -117,7 +115,7 @@ class MaskSimVPScheduledSamplingModule(pl.LightningModule):
                 }
             )
         return loss
-
+    
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self.sample_autoregressive(x, 11)
@@ -130,10 +128,10 @@ class MaskSimVPScheduledSamplingModule(pl.LightningModule):
             print("Increasing sample steps")
             self.schedule_idx = 0
             self.sample_steps = min(self.sample_steps+1, self.hparams.max_sample_steps)
-
+        
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(
-            self.parameters(), lr=self.hparams.lr,
+            self.parameters(), lr=self.hparams.lr, 
             weight_decay=self.hparams.weight_decay
         )
 
