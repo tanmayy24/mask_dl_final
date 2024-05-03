@@ -22,7 +22,7 @@ if __name__ == "__main__":
     
     module = MaskSimVPModule(
         in_shape=[11, 49, 160, 240], hid_S=64, hid_T=512, N_S=4, N_T=8,
-        model_type="gSTA", data_root=args.data_root, batch_size=64, lr=1e-3,
+        model_type="gSTA", data_root=args.data_root, batch_size=8, lr=1e-3,
         weight_decay=0.0, max_epochs=20, downsample=True, pre_seq_len=11,
         aft_seq_len=1
     )
