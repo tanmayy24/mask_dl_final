@@ -5,9 +5,6 @@ from openstl.models.simvp_model import SimVP_Model
 import torch.nn as nn
 import torch
 
-
-
-
 class MaskSimVP(nn.Module):
     def __init__(self, in_shape, hid_S, hid_T, N_S, N_T, model_type, pre_seq_len=11, aft_seq_len=11, drop_path=0.0, downsample=False):
         super().__init__()
