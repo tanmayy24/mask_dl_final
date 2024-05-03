@@ -9,7 +9,7 @@ import wandb
 import random
 
 from .model import MaskSimVP
-from .loader import DLDataset
+from .loader_un import DLDataset
 
 class MaskSimVPModule(pl.LightningModule):
     def __init__(self, 
