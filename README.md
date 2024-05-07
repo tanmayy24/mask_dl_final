@@ -1,4 +1,4 @@
-### Team 3 - batch_size=3
+### Team 3 - batch_size=3 (Deep Learning Spring'24)
 
 # Frame Prediction for Synthetic Videos
 
