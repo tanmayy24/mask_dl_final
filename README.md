@@ -69,7 +69,9 @@ To leverage advanced machine learning techniques to predict future video frames 
 The set-up requires Python 3 and pip.
 
 ### Install Dependencies
-```pip install -r requirements.txt```
+```
+pip install -r requirements.txt
+```
 
 ```
 git clone https://github.com/chengtan9907/OpenSTL.git
