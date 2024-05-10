@@ -1,4 +1,5 @@
-### Team 3: `batch_size=3` (Deep Learning Spring 2024)
+### Deep Learning Spring 2024
+### Team 3: `batch_size=3`
 
 # Frame Prediction and Segmentation for Synthetic Videos
 
@@ -111,14 +112,32 @@ python label.py
 ```
 
 ### Frame Prediction
-#### Training the model:
-`python train.py`
 
-This will train the initial U-Net and SimVP models and save the checkpoints.
-#### Fine-tuning the model:
-`python finetune.py --simvp_path <path-to-simvp-checkpoint>`
+#### Configuration
 
-Replace <path-to-simvp-checkpoint> with the path to your trained model checkpoint from the initial training phase.
+From the root directory, navigate to `trainer/config.py` and set `DEFAULT_DATA_PATH` to the directory of where all of the data is stored.
+
+#### Train the SimVP Model
+
+From the root directory, run the training script.
+
+```
+python train.py
+```
+
+This will train the initial SimVP model on directly on the masks and save the checkpoints.
+
+#### Fine-tune the Model
+
+```
+python finetune.py --simvp_path </path/to/simvp/checkpoint>
+```
+
+Replace `</path/to/simvp/checkpoint>` with the path to your trained model checkpoint from the initial training phase.
+
+#### Generate Predictions
+
+`# TODO`
 
 ## Experimental Results
 
