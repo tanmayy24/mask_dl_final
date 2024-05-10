@@ -1,3 +1,7 @@
+"""
+Adapted from
+https://github.com/eneserciyes/maskpredformer/blob/main/maskpredformer/trainer.py
+"""
 __all__ = ['MaskSimVPModule']
 import torch
 import os
@@ -12,7 +16,7 @@ from .model import MaskSimVP
 from .loader_un import DLDataset
 
 class MaskSimVPModule(pl.LightningModule):
-    def __init__(self, 
+    def __init__(self,
                  in_shape, hid_S, hid_T, N_S, N_T, model_type,
                  batch_size, lr, weight_decay, max_epochs,
                  data_root, pre_seq_len=11, aft_seq_len=11,
@@ -26,21 +30,38 @@ class MaskSimVPModule(pl.LightningModule):
         self.train_set = DLDataset(data_root, "train", unlabeled=unlabeled, use_gt_data=True, pre_seq_len=pre_seq_len, aft_seq_len=aft_seq_len)
         self.val_set = DLDataset(data_root, "val", use_gt_data=True, pre_seq_len=pre_seq_len, aft_seq_len=aft_seq_len)
         self.criterion = torch.nn.CrossEntropyLoss()
-    
+
     def train_dataloader(self):
         return torch.utils.data.DataLoader(
-            self.train_set, batch_size=self.hparams.batch_size, 
+            self.train_set, batch_size=self.hparams.batch_size,
             num_workers=8, shuffle=True, pin_memory=True
         )
 
     def val_dataloader(self):
         return torch.utils.data.DataLoader(
-            self.val_set, batch_size=self.hparams.batch_size, 
+            self.val_set, batch_size=self.hparams.batch_size,
             num_workers=8, shuffle=False, pin_memory=True
         )
 
     @torch.no_grad()
     def sample_autoregressive(self, x, t):
+        """
+        sliding window method.
+
+        arguments
+        ---
+        x : tensor
+            tensor with input frames
+        t: int
+            integer indicating for how many iterations we should apply the
+            sliding method
+
+        return
+        ---
+        cur_seq : tensor
+            cur_seq is the final sequence after `t` iterations of inference,
+            concatenation and sliding window
+        """
         cur_seq = x.clone()
         for _ in range(t):
             y_hat_logit_t = self.model(cur_seq)
@@ -48,13 +69,12 @@ class MaskSimVPModule(pl.LightningModule):
             cur_seq = torch.cat([cur_seq[:, 1:], y_hat], dim=1) # autoregressive concatenation
         return cur_seq
 
-    def step(self, x, y):
-        y_hat_logits = self.model(x)
-        return y_hat_logits
-    
-    def training_step(self, batch, batch_idx): 
+    def training_step(self, batch, batch_idx):
+        """
+        train the model for one batch
+        """
         x, y = batch
-        y_hat_logits = self.step(x, y)
+        y_hat_logits = self.model(x)
         b, t, *_ = y_hat_logits.shape
         y_hat_logits = y_hat_logits.view(b*t, *y_hat_logits.shape[2:])
         y = y.view(b*t, *y.shape[2:])
@@ -62,25 +82,33 @@ class MaskSimVPModule(pl.LightningModule):
         loss = self.criterion(y_hat_logits, y)
         self.log("train_loss", loss)
         return loss
-    
+
     def validation_step(self, batch, batch_idx):
+        """
+        validate the model for one batch
+        """
         x, y = batch
-        y_hat_logits = self.step(x, y)
+        y_hat_logits = self.model(x)
         b, t, *_ = y_hat_logits.shape
         y_hat_logits = y_hat_logits.view(b*t, *y_hat_logits.shape[2:])
         y = y.view(b*t, *y.shape[2:])
-       
+
         loss = self.criterion(y_hat_logits, y)
         self.log("val_loss", loss, sync_dist=True)
         return loss
 
     def configure_optimizers(self):
+        """
+        creates dictionary with optimizer and LR scheduler
+        """
         optimizer = torch.optim.Adam(
-            self.parameters(), lr=self.hparams.lr, 
+            self.parameters(),
+            lr=self.hparams.lr,
             weight_decay=self.hparams.weight_decay
         )
         lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
-            optimizer, max_lr=self.hparams.lr,
+            optimizer,
+            max_lr=self.hparams.lr,
             total_steps=self.hparams.max_epochs*len(self.train_dataloader()),
             final_div_factor=1e4
         )
@@ -90,7 +118,7 @@ class MaskSimVPModule(pl.LightningModule):
                 "scheduler": lr_scheduler,
                 "interval": "step",
                 "frequency": 1
-            } 
+            }
         }
 
         return opt_dict

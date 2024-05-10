@@ -6,9 +6,7 @@ from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.tuner import Tuner
 
 from trainer.config import SEED, DEFAULT_DATA_PATH
-from trainer.trainer_finetune import (
-    MaskSimVPScheduledSamplingModule,
-)
+from trainer.trainer_finetune import MaskSimVPScheduledSamplingModule
 
 def list_to_folder_name(l):
     return "-".join([str(x) for x in l])

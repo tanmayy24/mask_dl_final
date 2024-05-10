@@ -1,5 +1,9 @@
+"""
+MaskSimVP module.
+adapted from
+https://github.com/eneserciyes/maskpredformer/blob/main/maskpredformer/mask_simvp.py
+"""
 __all__ = ['DEFAULT_MODEL_CONFIG', 'MaskSimVP']
-
 
 from openstl.models.simvp_model import SimVP_Model
 import torch.nn as nn
@@ -10,8 +14,8 @@ class MaskSimVP(nn.Module):
         super().__init__()
         c = in_shape[1]
         self.simvp = SimVP_Model(
-            in_shape=in_shape, hid_S=hid_S, 
-            hid_T=hid_T, N_S=N_S, N_T=N_T, 
+            in_shape=in_shape, hid_S=hid_S,
+            hid_T=hid_T, N_S=N_S, N_T=N_T,
             model_type=model_type, drop_path=drop_path)
         self.token_embeddings = nn.Embedding(49, c)
         self.out_conv = nn.Conv2d(c, 49, 1, 1)
@@ -39,17 +43,17 @@ class MaskSimVP(nn.Module):
         elif self.aft_seq_len > self.pre_seq_len:
             d = self.aft_seq_len // self.pre_seq_len
             m = self.aft_seq_len % self.pre_seq_len
-    
+
             y_hat = []
             cur_seq = x.clone()
             for _ in range(d):
                 cur_seq = self.simvp(cur_seq)
                 y_hat.append(cur_seq)
-            
+
             if m != 0:
                 cur_seq = self.simvp(cur_seq)
                 y_hat.append(cur_seq[:, :m])
-            
+
             y_hat = torch.cat(y_hat, dim=1)
 
         b, t, *_ = y_hat.shape
@@ -62,4 +66,3 @@ class MaskSimVP(nn.Module):
         _, _, h, w = y_hat_logits.shape
         y_hat_logits = y_hat_logits.view(b, t, 49, h, w)
         return y_hat_logits
-
