@@ -58,7 +58,7 @@ To leverage advanced machine learning techniques to predict future video frames 
 - **Intersection-over-Union (IoU)**: Also known as the Jaccard Index, it measures how well the predicted mask of the video frame matches with the ground truth. We use the `JaccardIndex` module from `torchmetrics` ([Lightning AI](https://lightning.ai/docs/torchmetrics/stable/classification/jaccard_index.html)) to this metric.
 
 ## Model Architecture
-1. **Segmentation**: Uses the U-Net model for generating accurate masks of all unlabeled video frames.
+1. **Segmentation**: Uses the U-Net model [[1]](#1) for generating accurate masks of all unlabeled video frames.
 2. **Frame Prediction**:
    - **Initial Prediction**: SimVP model with gSTA for predicting future masks.
    - **Fine-tuning**: Enhances prediction accuracy by focusing on the IoU metric.
@@ -152,3 +152,8 @@ Below are the validation IoU scores obtained for each stage of the model trainin
 | SimVP (Fine-tuned)    | 0.455          |
 
 These results underline the effectiveness of the U-Net in segmentation tasks and illustrate the challenges and progress in frame prediction using the SimVP model.
+
+## References
+
+<a id="1">[1]</a> 
+Ronneberger, O., Fischer, P., & Brox, T. (2015). U-Net: Convolutional Networks for Biomedical Image segmentation. In _Medical Image Computing and Computer-assisted Intervention-MICCAI 2015: 18th International Conference_, Munich, Germany, October 5-9, 2015, Proceedings, Part III 18 (pp. 234-241). Springer International Publishing.
