@@ -69,15 +69,17 @@ To leverage advanced machine learning techniques to predict future video frames 
 The set-up requires Python 3 and pip.
 
 ### Install Dependencies
+Install libraries
 ```
 pip install -r requirements.txt
-```
 
 ```
-git clone https://github.com/chengtan9907/OpenSTL.git
+
+Install [OpenSTL](https://github.com/chengtan9907/OpenSTL) to use SimVP.
 ```
-```
-cd <path/to/OpenSTL>
+git clone git@github.com:chengtan9907/OpenSTL.git](https://github.com/chengtan9907/OpenSTL.git
+cd <path_to_OpenSTL>
+
 pip install -e .
 ```
 
@@ -119,25 +121,21 @@ python label.py
 
 From the root directory, navigate to `trainer/config.py` and set `DEFAULT_DATA_PATH` to the directory of where all of the data is stored.
 
-#### Train the SimVP Model
 
-From the root directory, run the training script.
+#### Training the model:
+First, change the dataset path in the file `trainer/config.py` to your own
+dataset.
 
-```
-python train.py
-```
+Once the data path is corrected, you can run:
 
-This will train the initial SimVP model on directly on the masks and save the checkpoints.
+`python train.py`
 
-#### Fine-tune the Model
+This will train the initial U-Net and SimVP models and save the checkpoints.
 
-```
-python finetune.py --simvp_path </path/to/simvp/checkpoint>
-```
+#### Fine-tuning the model:
+`python finetune.py --simvp_path <path-to-simvp-checkpoint>`
 
-Replace `</path/to/simvp/checkpoint>` with the path to your trained model checkpoint from the initial training phase.
-
-#### Generate Predictions
+#### Generating Predictions
 
 `# TODO`
 
@@ -152,3 +150,6 @@ Below are the validation IoU scores obtained for each stage of the model trainin
 | SimVP (Fine-tuned)    | 0.455          |
 
 These results underline the effectiveness of the U-Net in segmentation tasks and illustrate the challenges and progress in frame prediction using the SimVP model.
+
+# References
+Our work was inspired on the workflow proposed by the [maskpredformer](https://github.com/eneserciyes/maskpredformer).

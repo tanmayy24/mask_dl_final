@@ -1,3 +1,6 @@
+"""
+Generate masks prediction
+"""
 import torch
 import os
 from torch.utils.data import Dataset, DataLoader
@@ -5,7 +8,7 @@ from torchvision import transforms
 from tqdm import tqdm
 from torchmetrics import JaccardIndex
 from lightning import seed_everything
-from trainer.config import DEFAULT_DATA_PATH, SEED
+from trainer.config import DEFAULT_DATA_PATH, SEED, HIDDEN_DATA_PATH
 from trainer.trainer_finetune import MaskSimVPScheduledSamplingModule
 import numpy as np
 
@@ -49,10 +52,11 @@ def predict_hidden(config):
     model = MaskSimVPScheduledSamplingModule.load_from_checkpoint(
         config["ckpt_path"], data_root=config["data_root"], use_gt_data=True, unlabeled=False, load_datasets=False
     )
-    hidden_dataset = HiddenDLDataset("/scratch/rn2214/labeled/hidden/")
+    hidden_dataset = HiddenDLDataset(HIDDEN_DATA_PATH)
     hidden_data_loader = DataLoader(hidden_dataset, batch_size=64, num_workers=1, shuffle=False, pin_memory=True)
     all_yhat = []
-    print("INFO: Starting model predictions...for hidden dataset")
+
+    print("INFO: Starting model predictions for hidden dataset")
     for file_name, inputs in tqdm(hidden_data_loader, desc="Hidden Prediction model"):
         print(f"The filename is:", file_name)
         inputs = inputs.to(config["device"])
@@ -60,6 +64,7 @@ def predict_hidden(config):
             y_hat = model.sample_autoregressive(inputs, 11)
         all_yhat.append(y_hat[:, -1].cpu())
     all_yhat_tensor = torch.cat(all_yhat)
+
     print(f"The shape of predictions:", all_yhat_tensor.shape)
     torch.save(all_yhat_tensor, "hidden_preds_team3_final.pt")
     print("INFO: Predictions saved to hidden_preds_team3_final.pt")
