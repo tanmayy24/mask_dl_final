@@ -1,6 +1,7 @@
 SEED = 42
 
 DEFAULT_DATA_PATH = "/scratch/tk3309/dl_data/dataset/"
+HIDDEN_DATA_PATH = "/scratch/rn2214/labeled/hidden/"
 
 DEFAULT_MODEL_CONFIG = {
     'in_shape': [11, 3, 160, 240],
