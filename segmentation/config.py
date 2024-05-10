@@ -11,7 +11,7 @@ EARLY_STOP = True
 MODEL_NAME = 'best_unet_weights.pth'
 
 # use absolute paths to avoid FileNotFound errors
-TRAIN_DATA_DIR = '/scratch/rn2214/Deep_Learning_Final_BS3/data/train'
-VAL_DATA_DIR = '/scratch/rn2214/Deep_Learning_Final_BS3/data/val'
-UNLABELED_DATA_DIR = '/scratch/rn2214/Deep_Learning_Final_BS3/data/unlabeled'
-LABELED_OUT_DIR = '/scratch/rn2214/labeled'
+TRAIN_DATA_DIR = '/path/to/data/train'
+VAL_DATA_DIR = '/path/to/data/val'
+UNLABELED_DATA_DIR = '/path/to/data/unlabeled'
+LABELED_OUT_DIR = '/path/to/labeled'
