@@ -137,7 +137,15 @@ This will train the initial U-Net and SimVP models and save the checkpoints.
 
 #### Generating Predictions
 
-`# TODO`
+To generate predictions on the validation set use after updating the path to the best trained model in the checkpoint path inside the file:
+`python predict_simvp_finetune_val.py`
+
+This would print the IoU and save the predictions.
+
+Similarly, to generate predictions on the hidden set use after updating the path to the best trained model in the checkpoint path inside the file:
+`python predict_simvp_finetune_hidden.py`
+
+This would save the predictions on the hidden set. 
 
 ## Experimental Results
 
