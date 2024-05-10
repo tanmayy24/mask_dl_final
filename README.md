@@ -1,4 +1,4 @@
-### Team 3 - batch_size=3 (Deep Learning Spring'24)
+# Team 3 - batch_size=3 (Deep Learning Spring'24)
 
 # Frame Prediction for Synthetic Videos
 
@@ -27,12 +27,14 @@ To leverage advanced machine learning techniques to predict future video frames,
 Ensure you have Python and pip installed on your system.
 
 ### Install Dependencies
-```pip install -r requirements.txt```
+Install libraries
+```
+pip install -r requirements.txt
+```
 
+Install [OpenSTL](https://github.com/chengtan9907/OpenSTL) to use SimVP.
 ```
 git clone git@github.com:chengtan9907/OpenSTL.git](https://github.com/chengtan9907/OpenSTL.git
-```
-```
 cd <path_to_OpenSTL>
 pip install -e .
 ```
@@ -40,9 +42,15 @@ pip install -e .
 ### Usage
 
 #### Training the model:
+First, change the dataset path in the file `trainer/config.py` to your own
+dataset.
+
+Once the data path is corrected, you can run:
+
 `python train.py`
 
 This will train the initial U-Net and SimVP models and save the checkpoints.
+
 #### Fine-tuning the model:
 `python finetune.py --simvp_path <path-to-simvp-checkpoint>`
 
@@ -59,3 +67,6 @@ Below are the validation IoU scores obtained for each stage of the model trainin
 | SimVP (Fine-tuned)    | 0.455          |
 
 These results underline the effectiveness of the U-Net in segmentation tasks and illustrate the challenges and progress in frame prediction using the SimVP model.
+
+# References
+Our work was inspired on the workflow proposed by the [maskpredformer](https://github.com/eneserciyes/maskpredformer).
