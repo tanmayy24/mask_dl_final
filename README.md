@@ -54,18 +54,18 @@ To leverage advanced machine learning techniques to predict future video frames 
   ```
 
 ## Evaluation Metric
-- **Intersection-over-Union (IoU)**: Also known as the Jaccard Index, it measures how well the predicted mask of the video frame matches with the ground truth. We use the `JaccardIndex` module from `torchmetrics` ([Lightning AI](https://lightning.ai/docs/torchmetrics/stable/classification/jaccard_index.html)).
+- **Intersection-over-Union (IoU)**: Also known as the Jaccard Index, it measures how well the predicted mask of the video frame matches with the ground truth. We use the `JaccardIndex` module from `torchmetrics` ([Lightning AI](https://lightning.ai/docs/torchmetrics/stable/classification/jaccard_index.html)) to this metric.
 
 ## Model Architecture
-1. **Segmentation**: Uses the U-Net model for generating accurate masks of video frames.
+1. **Segmentation**: Uses the U-Net model for generating accurate masks of all unlabeled video frames.
 2. **Frame Prediction**:
-   - **Initial Prediction**: SimVP model with gSTA for predicting intermediate frames.
-   - **Fine-tuning**: Enhances prediction accuracy focusing on Intersection-over-Union (IoU) metric.
+   - **Initial Prediction**: SimVP model with gSTA for predicting future masks.
+   - **Fine-tuning**: Enhances prediction accuracy by focusing on the IoU metric.
 
 ## Getting Started
 
 ### Prerequisites
-Ensure you have Python and pip installed on your system.
+The set-up requires Python 3 and pip.
 
 ### Install Dependencies
 ```pip install -r requirements.txt```
@@ -74,12 +74,43 @@ Ensure you have Python and pip installed on your system.
 git clone https://github.com/chengtan9907/OpenSTL.git
 ```
 ```
-cd <path_to_OpenSTL>
+cd <path/to/OpenSTL>
 pip install -e .
 ```
 
-### Usage
+## Usage
 
+### Segmentation
+
+#### Configuration
+
+First, configure the model training and inference.
+
+```
+cd segmentation/
+```
+
+Open `config.py` and change the values of the `TRAIN_DATA_DIR`, `VAL_DATA_DIR`, and `UNLABELED_DATA_DIR` constants to the locations of your `train/`, `val/`, and `unlabeled/` directories. Use absolute paths to avoid errors. Set `LABELED_OUT_DIR` to the location where you would like the predicted masks of the unlabeled data saved.
+
+#### Train the U-Net Model
+
+Run the training script.
+
+```
+python train.py
+```
+
+This will save the best model to the `checkpoints/` directory with the `MODEL_NAME` specified in `config.py`.
+
+#### Generate Masks
+
+Generate masks for unlabeled data.
+
+```
+python label.py
+```
+
+### Frame Prediction
 #### Training the model:
 `python train.py`
 
