@@ -79,6 +79,8 @@ def train(model, train_dataloader, val_dataloader, device, verbose=False):
                 output = model(data)
                 loss = criterion(output, target)
 
+            iou_score = jaccard(softmax(output.to("cpu")), target.to("cpu"))
+
             train_loss_epoch.append(loss.item())
             train_iou_epoch.append(iou_score.item())
 
