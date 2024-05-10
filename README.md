@@ -23,35 +23,35 @@ To leverage advanced machine learning techniques to predict future video frames 
   ```
   data/
     ├── train/
-        ├── video_00000/
-            ├── image_0.png
-                ...
-            ├── image_21.png
-            ├── mask.npy
+        ├── video_00000/
+           ├── image_0.png
+               ...
+           ├── image_21.png
+           ├── mask.npy
             ...
-        ├── video_00999/
+       ├── video_00999/
     ├── val/
-        ├── video_01000/
+        ├── video_01000/
             ├── image_0.png
                 ...
             ├── image_21.png
             ├── mask.npy
             ...
-        ├── video_01999/
+        ├── video_01999/
     ├── unlabeled/
-        ├── video_02000/
+        ├── video_02000/
             ├── image_0.png
                 ...
             ├── image_21.png
             ...
-        ├── video_14999/
+        ├── video_14999/
     ├── hidden/
-            ├── video_15000/
-                ├── image_0.png
-                    ...
-                ├── image_10.png
+        ├── video_15000/
+            ├── image_0.png
                 ...
-            ├── video_19999/
+            ├── image_10.png
+            ...
+        ├── video_19999/
   ```
 
 ## Evaluation Metric
