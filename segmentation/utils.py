@@ -10,6 +10,16 @@ import config
 
 
 class IoUCELoss(nn.Module):
+    """
+    Custom loss function minimizing cross entropy loss
+    while maximizing IoU. Add a smoothing constant to ensure
+    that the IoU is differentiable in case both the predictions
+    and ground truth are all zero (resulting in a division
+    by zero -> inf).
+
+    Adapted from:
+    https://www.kaggle.com/code/bigironsphere/loss-function-library-keras-pytorch
+    """
     def __init__(self, weight=None, size_average=True):
         super(IoUCELoss, self).__init__()
         self.weight = weight
