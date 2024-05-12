@@ -60,7 +60,7 @@ To leverage advanced machine learning techniques to predict future video frames 
 ## Model Architecture
 1. **Segmentation**: Uses the U-Net model [[1]](#1) for generating accurate masks of all unlabeled video frames.
 2. **Frame Prediction**:
-   - **Initial Prediction**: SimVP model with gSTA for predicting future masks.
+   - **Initial Prediction**: SimVP [[2]](#2) model with gSTA for predicting future masks.
    - **Fine-tuning**: Enhances prediction accuracy by focusing on the IoU metric.
 
 ## Getting Started
@@ -69,7 +69,7 @@ To leverage advanced machine learning techniques to predict future video frames 
 The set-up requires Python 3 and pip.
 
 ### Install Dependencies
-Install libraries
+Install required libraries.
 ```
 pip install -r requirements.txt
 
@@ -77,8 +77,8 @@ pip install -r requirements.txt
 
 Install [OpenSTL](https://github.com/chengtan9907/OpenSTL) to use SimVP.
 ```
-git clone git@github.com:chengtan9907/OpenSTL.git](https://github.com/chengtan9907/OpenSTL.git
-cd <path_to_OpenSTL>
+git clone https://github.com/chengtan9907/OpenSTL.git
+cd <path/to/OpenSTL>
 
 pip install -e .
 ```
@@ -122,30 +122,35 @@ python label.py
 From the root directory, navigate to `trainer/config.py` and set `DEFAULT_DATA_PATH` to the directory of where all of the data is stored.
 
 
-#### Training the model:
-First, change the dataset path in the file `trainer/config.py` to your own
-dataset.
+#### Train the Model:
 
-Once the data path is corrected, you can run:
+```
+python train.py
+```
 
-`python train.py`
+This will train the initial SimVP model directly on the masks and save the checkpoints.
 
-This will train the initial U-Net and SimVP models and save the checkpoints.
+#### Fine-tune the Model:
 
-#### Fine-tuning the model:
-`python finetune.py --simvp_path <path-to-simvp-checkpoint>`
+```
+python finetune.py --simvp_path <path/to/simvp/checkpoint>
+```
 
-#### Generating Predictions
+#### Generate Predictions
 
-To generate predictions on the validation set use after updating the path to the best trained model in the checkpoint path inside the file:
-`python predict_simvp_finetune_val.py`
+To generate predictions on the validation set, update the `"ckpt_path"` in `predict_simvp_finetune_val.py` to the path of the best trained model.
 
-This would print the IoU and save the predictions.
+Then, run the following to print the IoU and save the predictions.
+```
+python predict_simvp_finetune_val.py
+```
 
-Similarly, to generate predictions on the hidden set use after updating the path to the best trained model in the checkpoint path inside the file:
-`python predict_simvp_finetune_hidden.py`
+Similarly, to generate predictions on the hidden set, update the `"ckpt_path"` in `predict_simvp_finetune_hidden.py` to the path of the best trained model.
 
-This would save the predictions on the hidden set. 
+Then, run the following to save predictions on the hidden set.
+```
+python predict_simvp_finetune_hidden.py
+```
 
 ## Experimental Results
 
@@ -164,4 +169,7 @@ These results underline the effectiveness of the U-Net in segmentation tasks and
 <a id="1">[1]</a> 
 Ronneberger, O., Fischer, P., & Brox, T. (2015). U-Net: Convolutional Networks for Biomedical Image segmentation. In _Medical Image Computing and Computer-assisted Intervention-MICCAI 2015: 18th International Conference_, Munich, Germany, October 5-9, 2015, Proceedings, Part III 18 (pp. 234-241). Springer International Publishing.
 
-Our work was inspired on the workflow proposed by the [maskpredformer](https://github.com/eneserciyes/maskpredformer).
+<a id="2">[2]</a> 
+Gao, Z., Tan, C., Wu, L., & Li, S. Z. (2022). SimVP: Simpler Yet Better Video Prediction. In _Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition_ (pp. 3170-3180).
+
+Our work was inspired by the workflow proposed by the **[maskpredformer](https://github.com/eneserciyes/maskpredformer)**.
